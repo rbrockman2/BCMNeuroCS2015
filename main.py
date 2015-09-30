@@ -20,7 +20,7 @@ if __name__ == "__main__":
     closed_avg = closes.mean()
     print(open_avg, closed_avg)
     dt = 1e-5
-    channel_data = record_channel(interval, dt)
+    channel_data = record_channel(interval, dt, opens, closes, mean_open_time, mean_close_time)
     channel_times = [i*dt for i in range(len(channel_data))]
 
     # Noise addition

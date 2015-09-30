@@ -4,7 +4,7 @@ from pandas import DataFrame
 from random import randint
 debug = True
 
-def record_channel(interval, dt):
+def record_channel(interval, dt, opens, closes, mean_open_time, mean_close_time):
     """ Enforces correct ratio of closed to open times from random data """
     def trim_times(open_time, close_time, over_shoot, start_state):
         if start_state and over_shoot > close_time:
