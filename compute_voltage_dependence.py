@@ -12,13 +12,6 @@ import unittest
 #outputs: lambda open Vm, lambda closed Vm
 
 def compute_voltage_dependence(debug = False, lo0=1, lc0=1, zg=1, T=295, delta=0.5, Vm=0):
-    if debug is False:    
-        lo0 = float(input("Enter the open lifetime at 0 mV, in msec: "))
-        lc0 = float(input("Enter the closed lifetime at 0 mV, in msec: "))
-        zg = float(input("Enter the number of gating charges (Zg): "))
-        T = float(input("Enter the temperature, in Kelvin: "))
-        delta = float(input("Enter the gating delta: "))
-        Vm = float(input("Enter the Vm for the voltage clamp, in mV: "))
     F = 1E5
     R = 8.3
     loVm = lo0 * exp((delta*zg*F*(Vm/1000))/(R*T))
@@ -27,9 +20,32 @@ def compute_voltage_dependence(debug = False, lo0=1, lc0=1, zg=1, T=295, delta=0
 
 class TestVoltageDependence(unittest.TestCase):    
     def test_at_0mV(self):
-        loVm, lcVm = compute_voltage_dependence(debug=1, 1, 1, 1, 295, 0.5, 0)        
-                
-        print("Open lifetime is", loVm, "Closed lifetime is", lcVm)
+        loVm, lcVm = compute_voltage_dependence(True, 1, 1, 1, 295, 0.5, 0)        
+        self.assertAlmostEqual(loVm, 1, places = 5)        
+        self.assertAlmostEqual(lcVm, 1, places = 5)
+    def test_at_0delta(self):
+        loVm, lcVm = compute_voltage_dependence(True, 1, 1, 1, 295, 0, -70)        
+        self.assertAlmostEqual(loVm, 1, places = 5)        
+        self.assertAlmostEqual(lcVm, 17.44221, places = 5)
+    def test_at_0valence(self):
+        loVm, lcVm = compute_voltage_dependence(True, 1, 1, 0, 295, 0.5, -70)        
+        self.assertAlmostEqual(loVm, 1, places = 5)        
+        self.assertAlmostEqual(lcVm, 1, places = 5)
+    def test_at_neg70mV(self):
+        loVm, lcVm = compute_voltage_dependence(True, 1, 1, 1, 295, 0.5, -70)        
+        self.assertAlmostEqual(loVm, 0.23944, places = 5)        
+        self.assertAlmostEqual(lcVm, 4.17639, places = 5)
+    def test_at_neg80mV(self):
+        loVm, lcVm = compute_voltage_dependence(True, 1, 1, 1, 295, 0.5, -80)        
+        self.assertAlmostEqual(loVm, 0.19522, places = 5)        
+        self.assertAlmostEqual(lcVm, 5.12255, places = 5)
+    def test_at_neg90mV(self):
+        loVm, lcVm = compute_voltage_dependence(True, 1, 1, 1, 295, 0.5, -90)        
+        self.assertAlmostEqual(loVm, 0.15916, places = 5)        
+        self.assertAlmostEqual(lcVm, 6.28308, places = 5)    
+
+if __name__ == '__main__':
+    unittest.main()
         
 #if debug:
 #    test_compute_voltage_dependence()
