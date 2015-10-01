@@ -12,7 +12,7 @@ from random import randint
 debug = False
 
 def noiseless_channel(open_lifetime, closed_lifetime, time):
-    def input_times(debug=False, open = 0.0, close = 0.0, time_len = 0.0):
+    def input_times(open = 0.0, close = 0.0, time_len = 0.0):
         """ Take user inputs for open/closed times in msec."""
         open = open_lifetime
         close = closed_lifetime
@@ -52,7 +52,7 @@ def noiseless_channel(open_lifetime, closed_lifetime, time):
     
     def record_channel(interval, dt):
         """ Not sure why this must exist """
-        def trim_times(open_time, close_time, over_shoot, start_state):
+        '''def trim_times(open_time, close_time, over_shoot, start_state):
             if start_state and over_shoot > close_time:
                 open_time = step_time - over_shoot
                 close_time = 0.0
@@ -63,7 +63,7 @@ def noiseless_channel(open_lifetime, closed_lifetime, time):
                 open_time = 0.0
             elif not start_state and over_shoot <= open_time:
                 open_time = step_time - over_shoot - close_time
-            return open_time, close_time
+            return open_time, close_time'''
         
         def run_channel(open, closed, g_open=1, start_open=False):
             channel = []
@@ -85,16 +85,21 @@ def noiseless_channel(open_lifetime, closed_lifetime, time):
             open_time = open * mean_open_time
             close_time = close * mean_close_time
             step_time = open_time + close_time
+            #print(step_time)
             cum_time += step_time
+            #print(cum_time)
             if cum_time > interval:
                 over_shoot = cum_time - interval
-                open_time, close_time = trim_times(open_time, close_time, over_shoot, start_state)
+                #open_time, close_time = trim_times(open_time, close_time, over_shoot, start_state)
                 over_shot = True
             channel_data += run_channel(open_time, close_time,
                                         start_open=start_state)
+            
             if over_shot:
                 break
-        return channel_data
+        # chopping it at interval
+        trimmed_data = channel_data[0:int(interval/dt)]
+        return trimmed_data
     
     '''def add_noise(channel_data, amp):
         """ Adds noise to the on and off states to make it more biological-looking """
@@ -106,7 +111,7 @@ def noiseless_channel(open_lifetime, closed_lifetime, time):
     
 
     # Receive inputs for open, closed, and total times
-    mean_open_time, mean_close_time, interval = input_times()
+    mean_open_time, mean_close_time, interval = input_times(open_lifetime, closed_lifetime, time)
     # Concoct random open and closed times    
     opens, closes = get_randoms(mean_open_time, mean_close_time, interval)
     #open_avg = opens.mean()
@@ -114,7 +119,7 @@ def noiseless_channel(open_lifetime, closed_lifetime, time):
     #print(open_avg, closed_avg)
     dt = 1e-5
     channel_data = record_channel(interval, dt)
-    channel_times = [i*dt for i in range(len(channel_data))]
+    #channel_times = [i*dt for i in range(len(channel_data))]
 
 
     # Data formatting
