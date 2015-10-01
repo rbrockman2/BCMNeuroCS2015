@@ -3,13 +3,15 @@
 Created on Wed Sep 30 19:33:53 2015
 
 @author: Kimberly, Uday
+
+Function: compute voltage dependent lifetime and test
+Inputs:   lambda open 0, lambda closed 0, Zg, T, delta, Vm
+Outputs:  lambda open Vm, lambda closed Vm
 """
 from math import exp
 import unittest
 
-#compute voltage dependent lifetime
-#inputs: lambda open 0, lambda closed 0, Zg, T, delta, Vm
-#outputs: lambda open Vm, lambda closed Vm
+
 
 def compute_voltage_dependence(debug = False, lo0=1, lc0=1, zg=1, T=295, delta=0.5, Vm=0):
     F = 1E5
@@ -42,7 +44,19 @@ class TestVoltageDependence(unittest.TestCase):
     def test_at_neg90mV(self):
         loVm, lcVm = compute_voltage_dependence(True, 1, 1, 1, 295, 0.5, -90)        
         self.assertAlmostEqual(loVm, 0.15916, places = 5)        
-        self.assertAlmostEqual(lcVm, 6.28308, places = 5)    
+        self.assertAlmostEqual(lcVm, 6.28308, places = 5)
+    def test_at_70mV(self):
+        loVm, lcVm = compute_voltage_dependence(True, 1, 1, 1, 295, 0.5, 70)        
+        self.assertAlmostEqual(loVm, 4.17639, places = 5)        
+        self.assertAlmostEqual(lcVm, 0.23944, places = 5)
+    def test_at_80mV(self):
+        loVm, lcVm = compute_voltage_dependence(True, 1, 1, 1, 295, 0.5, 80)
+        self.assertAlmostEqual(loVm, 5.12255, places = 5)        
+        self.assertAlmostEqual(lcVm, 0.19522, places = 5)
+    def test_at_90mV(self):
+        loVm, lcVm = compute_voltage_dependence(True, 1, 1, 1, 295, 0.5, 90)
+        self.assertAlmostEqual(loVm, 6.28308, places = 5)        
+        self.assertAlmostEqual(lcVm, 0.15916, places = 5)
 
 if __name__ == '__main__':
     unittest.main()
