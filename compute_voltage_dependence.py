@@ -5,15 +5,16 @@ Created on Wed Sep 30 19:33:53 2015
 @author: Kimberly, Uday
 
 Function: compute voltage dependent lifetime and test
-Inputs:   lambda open 0, lambda closed 0, Zg, T, delta, Vm
 Outputs:  lambda open Vm, lambda closed Vm
+Function is passed lambda-open at 0 mV, lambda-closed at 0 mV, the zg gating
+charges, temperature in K, delta, and voltage clamp Vm.
 """
 from math import exp
 import unittest
 
 
 
-def compute_voltage_dependence(debug = False, lo0=1, lc0=1, zg=1, T=295, delta=0.5, Vm=0):
+def compute_voltage_dependence(lo0=1, lc0=1, zg=1, T=295, delta=0.5, Vm=0):
     F = 1E5
     R = 8.3
     loVm = lo0 * exp((delta*zg*F*(Vm/1000))/(R*T))
@@ -60,6 +61,8 @@ class TestVoltageDependence(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
+
+"""Main portion only there for debug purposes"""
         
 #if debug:
 #    test_compute_voltage_dependence()
