@@ -43,14 +43,14 @@ class Channel():
     def getParams(self):
         '''Asks the user to describe the channel.'''
         name = input("What is this channel's name?: ")
-        Erev = input("What is this channel's 0-current potential?: ")
-        openlife = input("What is this channel's open lifetime (msec)?: ")
-        closedlife = input("What is this channel's closed lifetime (msec)?: ")
-        gamma = input("What is the single-channel conductance?: ")
-        gatingCharges = input("How many gating charges does this channel have?: ")
-        delta = input("What is delta for this channel's gating charge?: ")
-        membraneVoltage = input("At what voltage would you like to clamp this channel (mV)?: ")
-        number = input("How many of these channels are there?: ")
+        Erev = float(input("What is this channel's 0-current potential? (mV): "))
+        openlife = float(input("What is this channel's open lifetime (msec)?: "))
+        closedlife = float(input("What is this channel's closed lifetime (msec)?: "))
+        gamma = float(input("What is the single-channel conductance (S)?: "))
+        gatingCharges = float(input("How many gating charges does this channel have?: "))
+        delta = float(input("What is delta for this channel's gating charge?: "))
+        membraneVoltage = float(input("At what voltage would you like to clamp this channel (mV)?: "))
+        number = int(input("How many of these channels are there?: "))
         return name, openlife, closedlife, gatingCharges, delta, membraneVoltage, number, Erev, gamma
         
     def computeCurrentTS(self, time, dt, temp):
@@ -74,7 +74,7 @@ class Channel():
         numChannel_TS = channelSummer(time, self.N, self.lifeo, self.lifec)        
         
         # call Olivia to get the current
-        current_TS = currentFromTimeSeries_oneVm(numChannel_TS, self.gamma, self.Vm, self.Ex)
+        current_TS = currentFromTimeSeries_oneVm(numChannel_TS, self.gamma, self.Vm, self.E0)
         
         return current_TS
     

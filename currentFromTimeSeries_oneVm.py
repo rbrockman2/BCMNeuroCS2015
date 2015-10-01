@@ -27,7 +27,11 @@ def currentFromTimeSeries_oneVm(timeseries, gamma, Vm, Ex):
     Outputs:
     current_series  the current in each time bin'''
     
-    Vm_inV = Vm * 10**-3
-    Ex_inV = Ex * 10**-3
-    current_series = [N * gamma * (Vm_inV - Ex_inV) for N in timeseries]
+    Vm_inV = float(Vm * 10**-3)
+    Ex_inV = float(Ex * 10**-3)
+    print(len(timeseries))
+    if len(timeseries) > 1:
+        current_series = [N * gamma * (Vm_inV - Ex_inV) for N in timeseries]
+    else:
+        current_series = timeseries * gamma * (Vm_inV - Ex_inV)
     return current_series
