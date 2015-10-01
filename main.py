@@ -1,3 +1,14 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Tue Sep 29 2015
+
+@author: Dr. Paul and Robert Theron Brockman II
+
+BCM Computation for Neuroscience Fall 2015
+
+Final Group Assignment
+
+"""
 import numpy as np
 import matplotlib.pyplot as plt
 from pandas import DataFrame
