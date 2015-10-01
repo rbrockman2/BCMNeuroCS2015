@@ -12,7 +12,7 @@ from random import randint
 debug = False
 
 def noiseless_channel(open_lifetime, closed_lifetime, time):
-    def input_times(debug=False, open = 0.0, close = 0.0, time_len = 0.0):
+    def input_times(open = 0.0, close = 0.0, time_len = 0.0):
         """ Take user inputs for open/closed times in msec."""
         open = open_lifetime
         close = closed_lifetime
@@ -106,7 +106,7 @@ def noiseless_channel(open_lifetime, closed_lifetime, time):
     
 
     # Receive inputs for open, closed, and total times
-    mean_open_time, mean_close_time, interval = input_times()
+    mean_open_time, mean_close_time, interval = input_times(open_lifetime, closed_lifetime, time)
     # Concoct random open and closed times    
     opens, closes = get_randoms(mean_open_time, mean_close_time, interval)
     #open_avg = opens.mean()
@@ -114,7 +114,7 @@ def noiseless_channel(open_lifetime, closed_lifetime, time):
     #print(open_avg, closed_avg)
     dt = 1e-5
     channel_data = record_channel(interval, dt)
-    channel_times = [i*dt for i in range(len(channel_data))]
+    #channel_times = [i*dt for i in range(len(channel_data))]
 
 
     # Data formatting
