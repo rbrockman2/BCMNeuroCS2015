@@ -19,10 +19,10 @@ class Membrane():
         self.dT = float(input("Enter dT step (msec)"))
     def define_and_init_new_channel_set(self):
         self.channel.append(Channel())
-        self.channel[self.channel_sets_initialized_count].getParams()
+        #self.channel[self.channel_sets_initialized_count].getParams()
         self.channel[self.channel_sets_initialized_count].computeCurrentTS( \
             self.SimulationTime, self.dT, self.Temp)
-        self.channels_sets_initialized_count = self.channels_sets_initialized_count + 1
+        self.channel_sets_initialized_count = self.channels_sets_initialized_count + 1
 
 if __name__ == "__main__": 
     myMembrane = Membrane()

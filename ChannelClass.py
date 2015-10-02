@@ -68,7 +68,7 @@ class Channel():
         
         NOTE: NEED TO MODIFY channelSummer TO TAKE dt'''
         # call Uday/Kim to get lifetime open and closed
-        lifeo_Vm, lifec_Vm = compute_voltage_dependence(False, self.lifeo, self.lifec, self.zg, temp, self.d, self.Vm)
+        lifeo_Vm, lifec_Vm = compute_voltage_dependence(self.lifeo, self.lifec, self.zg, temp, self.d, self.Vm)
         
         # call Andrew to get the time series
         numChannel_TS = channelSummer(time, self.N, self.lifeo, self.lifec)        
