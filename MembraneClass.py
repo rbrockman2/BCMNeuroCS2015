@@ -5,13 +5,11 @@ Created on Wed Sep 30 21:19:21 2015
 @author: uday, kim
 """
 
+import matplotlib.pyplot as plot
 from ChannelClass import Channel
 import numpy as np
-import math
-from pandas import DataFrame
-from random import randint
 debug = True
-import matplotlib.pyplot as plot
+
 
 class Membrane():
     """
@@ -23,14 +21,13 @@ class Membrane():
         self.channel_set = []
         self.Temp = 298 #set default value to 298K
         self.simulation_time = 100 #set default simulation time to 20ms
-        self.get_membrane_parameters()
-        self.create_channel_set()
+
         self.noise_amp = 0.05
         
     def get_membrane_parameters(self):
         # Todo:  add option to use default parameters.
         self.Temp = int(input("Enter Temperature (Kelvin) ::"))
-        self.SimulationTime = int(input("Enter Total Simulation Time (msec)::"))
+        self.simulation_time = int(input("Enter Total Simulation Time (msec)::"))
         self.dt = float(input("Enter dt step (msec)"))
  
     def create_channel_set(self):
@@ -64,15 +61,30 @@ class Membrane():
         return chan_dat_np #returns the output of the line above as the function's output
 
     @staticmethod
-    def plot_current_TS(current_TS, time, dt=1E5):
+    def plot_current_TS(current_TS, dt=1E5):
+        """
+        Plots a current time series.
+
+        Inputs:
+            current_TS:  a list of current values in amps
+            dt: the time step size for the current time series in ms
+            
+        Authors: by Gabe and Carli.    
+        
+        """
         # Gabe and Carli take on the world of magic and marvel, a world of plot perfection
-                 
+               
+        print("Time Step in ms {0}".format(dt));
+        print("Length of the time series {0}".format(len(current_TS)))                
+               
              
         x_axis = []    
-        i = 0    
-        while i < time: # create x_axis list in correct time steps
+        i = 0
+        idx = 0
+        while idx < len(current_TS): # create x_axis list in correct time steps
             x_axis += [i] 
             i += dt
+            idx += 1
             
         nano_current = []
         for item in current_TS: 
@@ -80,17 +92,16 @@ class Membrane():
             nano_current += [item]
         y_axis = nano_current
 
-        print(dt)
-        print(len(y_axis))            
-        print(len(x_axis))            
-
             
-#        plot.plot(x_axis, y_axis, label='time', marker='o', color='maroon', linestyle = '-')
- #       plot.xlabel('Time (msec)')
-  #      plot.ylabel('Net current (nA)')
-   #     plot.title('Title Title Title')
-    #    plot.grid()
-     #   plot.show()
+        print("y_axis length {0}".format(len(y_axis)))
+        print("x_axis length {0}".format(len(x_axis)))              
+            
+        plot.plot(x_axis, y_axis, label='time', marker='o', color='maroon', linestyle = '-')
+        plot.xlabel('Time (msec)')
+        plot.ylabel('Net current (nA)')
+        plot.title('Current Time Series')
+        plot.grid()
+        plot.show()
       
       #plot.savefig('program_output.pdf')
         
@@ -98,15 +109,15 @@ class Membrane():
         current_TS = self.compute_current()
         noisy_TS = Membrane.add_noise(current_TS,self.noise_amp)        
         
-        Membrane.plot_current_TS(noisy_TS,self.simulation_time*1000,self.dt)    
+        Membrane.plot_current_TS(noisy_TS,self.dt)    
 
 
-dt=1
-time = 8
-amp = 0.05
-channel_data = [1,2,3,4,5,6,7,8]
-noise_currents = Membrane.add_noise(channel_data, amp)
-x = Membrane.plot_current_TS(noise_currents, time, dt)
+#dt=1
+#time = 8
+#amp = 0.05
+#channel_data = [1,2,3,4,5,6,7,8]
+#noise_currents = Membrane.add_noise(channel_data, amp)
+#x = Membrane.plot_current_TS(noise_currents, time, dt)
 
 
                     
@@ -114,6 +125,8 @@ x = Membrane.plot_current_TS(noise_currents, time, dt)
 
 if __name__ == "__main__": 
     myMembrane = Membrane()
+    myMembrane.get_membrane_parameters()
+    myMembrane.create_channel_set()
     myMembrane.make_plot()
     
     
