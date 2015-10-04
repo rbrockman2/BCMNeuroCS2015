@@ -14,9 +14,6 @@ debug = False
 def noiseless_channel(open_lifetime, closed_lifetime, time, dt):  # added dt as input to this function instead of having default value
     def input_times(open = 0.0, close = 0.0, time_len = 0.0):
         """ Take user inputs for open/closed times in msec."""
-        open = open_lifetime
-        close = closed_lifetime
-        time_len = time
         if open:
             mean_open_time = float(open) * 1e-3 # take ms convert to s
         else: 
@@ -50,7 +47,7 @@ def noiseless_channel(open_lifetime, closed_lifetime, time, dt):  # added dt as 
                 samples *= 2
         return opens, closes
     
-    def record_channel(interval, dt):
+    def record_channel(time, interval, dt):
         """ Not sure why this must exist """
         '''def trim_times(open_time, close_time, over_shoot, start_state):
             if start_state and over_shoot > close_time:
@@ -75,6 +72,7 @@ def noiseless_channel(open_lifetime, closed_lifetime, time, dt):  # added dt as 
                 channel = opening + closing
             else:
                 channel = closing + opening
+            print('channel length', len(channel))
             return channel
     
         channel_data = []
@@ -89,7 +87,7 @@ def noiseless_channel(open_lifetime, closed_lifetime, time, dt):  # added dt as 
             cum_time += step_time
             #print(cum_time)
             if cum_time > interval:
-                over_shoot = cum_time - interval
+                over_shot = cum_time - interval
                 #open_time, close_time = trim_times(open_time, close_time, over_shoot, start_state)
                 over_shot = True
             channel_data += run_channel(open_time, close_time,
@@ -97,7 +95,17 @@ def noiseless_channel(open_lifetime, closed_lifetime, time, dt):  # added dt as 
             
             if over_shot:
                 break
+            
+        channel = []
+        # dt is bin size
+        # you want dt in ms * recording duration in ms = number of bins
+        n_bins = dt * time
+        
+        
         # chopping it at interval
+        print('interval/dt', interval/dt)
+        print('trimmed_data length', int(interval/dt))
+        print('channel data length', len(channel_data))
         trimmed_data = channel_data[0:int(interval/dt)]
         return trimmed_data
     
@@ -112,14 +120,18 @@ def noiseless_channel(open_lifetime, closed_lifetime, time, dt):  # added dt as 
 
     # Receive inputs for open, closed, and total times
     mean_open_time, mean_close_time, interval = input_times(open_lifetime, closed_lifetime, time)
+    print('mean open time', mean_open_time)
+    print('mean close time', mean_close_time)
+    print('interval', interval)
     # Concoct random open and closed times    
     opens, closes = get_randoms(mean_open_time, mean_close_time, interval)
     #open_avg = opens.mean()
     #closed_avg = closes.mean()
     #print(open_avg, closed_avg)
     #dt = 1e-5  # commented out to test sending dt as input
-    dt = dt/1000  # convert ms input into seconds units
-    channel_data = record_channel(interval, dt)
+    channel_data = record_channel(time, interval, dt)
+    print('returning vector of length', len(channel_data))
+    print('')
     #channel_times = [i*dt for i in range(len(channel_data))]
 
 

@@ -7,7 +7,7 @@ def channelSummer(totalTime, dt, nChannels, lifetimeOpenVm, lifetimeClosedVm):  
         bigSeries = []
         for i in range(nChannels):
             timeSeries = noiseless_channel(lifetimeOpenVm, lifetimeClosedVm, totalTime, dt)  # pass dt onto noiseless_channel
-            print(len(timeSeries))
+            #print(len(timeSeries))
             bigSeries = [x + y for x, y in zip(bigSeries, timeSeries)]
             type(timeSeries)
             if i>0:
