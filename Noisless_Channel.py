@@ -11,7 +11,7 @@ from pandas import DataFrame
 from random import randint
 debug = False
 
-def noiseless_channel(open_lifetime, closed_lifetime, time):
+def noiseless_channel(open_lifetime, closed_lifetime, time, dt):  # added dt as input to this function instead of having default value
     def input_times(open = 0.0, close = 0.0, time_len = 0.0):
         """ Take user inputs for open/closed times in msec."""
         open = open_lifetime
@@ -117,7 +117,8 @@ def noiseless_channel(open_lifetime, closed_lifetime, time):
     #open_avg = opens.mean()
     #closed_avg = closes.mean()
     #print(open_avg, closed_avg)
-    dt = 1e-5
+    #dt = 1e-5  # commented out to test sending dt as input
+    dt = dt/1000  # convert ms input into seconds units
     channel_data = record_channel(interval, dt)
     #channel_times = [i*dt for i in range(len(channel_data))]
 

@@ -34,7 +34,7 @@ class Channel():
                               'zg': 1, 'd': 0.8, 'Vm': -65, 'N': 100,
                               'gamma': 10e-9, 'E0': 0}
                     myChannel = Channel(**myDict)
-                this class is not equipped to deal with different input
+                this class is not equipped to deal with different input keys
             2) send a populated dictionary to the class with  some of the keys:
                 name, lifeo, lifec, zg, d, Vm, N, gamma, E0
                 
@@ -153,7 +153,7 @@ class Channel():
         lifeo_Vm, lifec_Vm = compute_voltage_dependence(self.lifeo, self.lifec, self.zg, temp, self.d, self.Vm)
         
         # call Andrew to get the time series
-        numChannel_TS = channelSummer(time, self.N, self.lifeo, self.lifec)        
+        numChannel_TS = channelSummer(time, dt, self.N, lifeo_Vm, lifec_Vm)        
         
         # call Olivia to get the current
         current_TS = currentFromTimeSeries_oneVm(numChannel_TS, self.gamma, self.Vm, self.E0)
