@@ -2,7 +2,7 @@
 """
 Created on Wed Sep 30 19:18:24 2015
 
-@author: Titan
+@author: Jiakun Fu
 """
 
 import numpy as np
@@ -84,22 +84,16 @@ def noiseless_channel(open_lifetime, closed_lifetime, time, dt):  # added dt as 
         for open, close in zip(opens, closes):
             open_time = open * mean_open_time
             close_time = close * mean_close_time
-            step_time = open_time + close_time
-            #print(step_time)
-            cum_time += step_time
-            #print(cum_time)
-            if cum_time > interval:
-                #over_shoot = cum_time - interval
-                #open_time, close_time = trim_times(open_time, close_time, over_shoot, start_state)
-                over_shot = True
             channel_data += run_channel(open_time, close_time,
                                         start_open=start_state)
-            
-            if over_shot:
+            n_steps = len(channel_data) # have to check channel_data instead of summing up open and closed times because in run-channel, int(open/dt) has roundup errors that makes us loose a few data points.
+            if n_steps > int(interval/dt):
+                over_shot = True
                 break
         # chopping it at interval
         trimmed_data = channel_data[0:int(interval/dt)]
         return trimmed_data
+
     
 
     # Receive inputs for open, closed, and total times
