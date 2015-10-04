@@ -30,15 +30,19 @@ class Membrane():
         self.simulation_time = int(input("Enter Total Simulation Time (msec)::"))
         self.dt = float(input("Enter dt step (msec)"))
  
-    def create_channel_set(self):
-        more_channels = True
-        while more_channels == True:   
-            self.channel_set.append(Channel())
-            continueQuery = input("Add more channels?  (y/N) ")
-            if continueQuery.lower() == 'y':
-                more_channels = True
-            else:
-                more_channels = False
+    def create_channel_set(self, **inDict):
+        if len(inDict) == 0:  # allows you to send an empty dictionary to this function and still make channels
+            more_channels = True
+            while more_channels == True:
+                self.channel_set.append(Channel())
+                continueQuery = input("Add more channels?  (y/N) ")
+                if continueQuery.lower() == 'y':
+                    more_channels = True
+                else:
+                    more_channels = False
+        else:  # allows you to send a dictionary of the channels you want to add to your membrane            
+            for channelName, channelObj in inDict.items():
+                self.channel_set.append(channelObj)
 
     def compute_current(self):  
         total_current_TS = []
@@ -109,7 +113,8 @@ class Membrane():
         current_TS = self.compute_current()
         noisy_TS = Membrane.add_noise(current_TS,self.noise_amp)        
         
-        Membrane.plot_current_TS(noisy_TS,self.dt)    
+        #Membrane.plot_current_TS(noisy_TS,self.dt)    
+        Membrane.plot_current_TS(current_TS,self.dt)
 
 
 #dt=1
@@ -124,9 +129,16 @@ class Membrane():
 
 
 if __name__ == "__main__": 
+    myDict1 = {'name': 'channel1', 'lifeo': 100, 'lifec': 10, 'zg': 0, 'd': 1, 'Vm': -65, 'N': 1, 'gamma': 10e-9, 'E0': 0}
+    channel1 = Channel(**myDict1)    
+    myDict2 = {'name': 'channel2', 'lifeo': 10, 'lifec': 20, 'zg': 1, 'd': 0.8, 'Vm': -40, 'N': 100, 'gamma': 10e-9, 'E0': 0}
+    channel2 = Channel(**myDict2)
+    
+    channelDict = {channel1.name: channel1}#, channel2.name: channel2}
+    
     myMembrane = Membrane()
     myMembrane.get_membrane_parameters()
-    myMembrane.create_channel_set()
+    myMembrane.create_channel_set(**channelDict)
     myMembrane.make_plot()
     
     
