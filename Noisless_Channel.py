@@ -44,7 +44,7 @@ def noiseless_channel(open_lifetime, closed_lifetime, time, dt):  # added dt as 
             opens = np.random.exponential(size=samples)
             closes = np.random.exponential(size=samples)
             time_covered = mean_open_time * sum(opens) + mean_close_time * sum(closes)
-            if time_covered >= interval:
+            if time_covered > interval:
                 too_short = False
             else:
                 samples *= 2
@@ -89,7 +89,7 @@ def noiseless_channel(open_lifetime, closed_lifetime, time, dt):  # added dt as 
             cum_time += step_time
             #print(cum_time)
             if cum_time > interval:
-                over_shoot = cum_time - interval
+                #over_shoot = cum_time - interval
                 #open_time, close_time = trim_times(open_time, close_time, over_shoot, start_state)
                 over_shot = True
             channel_data += run_channel(open_time, close_time,
@@ -100,14 +100,6 @@ def noiseless_channel(open_lifetime, closed_lifetime, time, dt):  # added dt as 
         # chopping it at interval
         trimmed_data = channel_data[0:int(interval/dt)]
         return trimmed_data
-    
-    '''def add_noise(channel_data, amp):
-        """ Adds noise to the on and off states to make it more biological-looking """
-        noise = np.random.normal(size=len(channel_data))
-        scaled_noise = noise * amp
-        chan_dat_np = np.array(channel_data)+scaled_noise
-        return chan_dat_np
-    '''
     
 
     # Receive inputs for open, closed, and total times
