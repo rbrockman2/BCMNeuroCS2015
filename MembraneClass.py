@@ -22,7 +22,7 @@ class Membrane():
         self.Temp = 298 #set default value to 298K
         self.simulation_time = 100 #set default simulation time to 20ms
 
-        self.noise_amp = 0.05
+        self.noise_amp = 0.0001
         
     def get_membrane_parameters(self):
         # Todo:  add option to use default parameters.
@@ -53,6 +53,7 @@ class Membrane():
     
     @staticmethod
     def add_noise(channel_data, amp):
+        """Worked on by Gabe S. and Elizabeth L."""
         """ATTN: there is unit testing stuff in here you will need to get rid of for actual inputs"""
         """ Adds noise to the on and off states to make it more biological-looking """
         noise = np.random.normal(size=len(channel_data)) #takes the output from record_channel and makes a tuple of random numbers using Numpy

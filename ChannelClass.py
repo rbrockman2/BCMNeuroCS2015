@@ -5,9 +5,14 @@ Created on Wed Sep 30 20:40:30 2015
 @author: Olivia
 """
 
-from compute_voltage_dependence import compute_voltage_dependence
-from channelSummer import channelSummer
+
+from Noisless_Channel import noiseless_channel
+import numpy as np
 from currentFromTimeSeries_oneVm import currentFromTimeSeries_oneVm
+from math import exp
+
+import unittest
+
 
 class Channel():
     def __init__(self, **propDict):
@@ -150,13 +155,98 @@ class Channel():
         
         NOTE: NEED TO MODIFY channelSummer TO TAKE dt'''
         # call Uday/Kim to get lifetime open and closed
-        lifeo_Vm, lifec_Vm = compute_voltage_dependence(self.lifeo, self.lifec, self.zg, temp, self.d, self.Vm)
+        lifeo_Vm, lifec_Vm = Channel.compute_voltage_dependence(self.lifeo, self.lifec, self.zg, temp, self.d, self.Vm)
         
         # call Andrew to get the time series
-        numChannel_TS = channelSummer(time, dt, self.N, lifeo_Vm, lifec_Vm)        
+        numChannel_TS = Channel.channelSummer(time, dt, self.N, lifeo_Vm, lifec_Vm)        
         
         # call Olivia to get the current
         current_TS = currentFromTimeSeries_oneVm(numChannel_TS, self.gamma, self.Vm, self.E0)
         
         return current_TS
+        
+       # -*- coding: utf-8 -*-
+
+    @staticmethod
+    def compute_voltage_dependence(lo0=1, lc0=1, zg=1, T=295, delta=0.5, Vm=0):
+        """
+        Created on Wed Sep 30 19:33:53 2015
+        
+        @author: Kimberly, Uday
+        
+        Function: compute voltage dependent lifetime and test
+        Outputs:  lambda open Vm, lambda closed Vm
+        Function is passed lambda-open at 0 mV, lambda-closed at 0 mV, the zg gating
+        charges, temperature in K, delta, and voltage clamp Vm.
+        """
+        F = 1E5
+        R = 8.3
+        loVm = lo0 * exp((delta*zg*F*(Vm/1000))/(R*T))
+        lcVm = lc0 * exp(((1-delta)*-1*zg*F*(Vm/1000))/(R*T))
+        return loVm, lcVm
+    
+    @staticmethod    
+    def channelSummer(totalTime, dt, nChannels, lifetimeOpenVm, lifetimeClosedVm):  # added dt as input to this function
+        # this will be received from somewhere else, eventually. whoever calls it.
+        bigSeries = []
+        for i in range(nChannels):
+            timeSeries = noiseless_channel(lifetimeOpenVm, lifetimeClosedVm, totalTime, dt)  # pass dt onto noiseless_channel
+            print(len(timeSeries))
+            bigSeries = [x + y for x, y in zip(bigSeries, timeSeries)]
+            type(timeSeries)
+            if i>0:
+                bigSeries = np.add(bigSeries, timeSeries)
+            else:
+                bigSeries = timeSeries
+        return bigSeries
+            
+            
+            
+            
+        
+
+class TestVoltageDependence(unittest.TestCase):    
+    def test_at_0mV(self):
+        loVm, lcVm = Channel.compute_voltage_dependence(1, 1, 1, 295, 0.5, 0)        
+        self.assertAlmostEqual(loVm, 1, places = 5)        
+        self.assertAlmostEqual(lcVm, 1, places = 5)
+    def test_at_0delta(self):
+        loVm, lcVm = Channel.compute_voltage_dependence(1, 1, 1, 295, 0, -70)        
+        self.assertAlmostEqual(loVm, 1, places = 5)        
+        self.assertAlmostEqual(lcVm, 17.44221, places = 5)
+    def test_at_0valence(self):
+        loVm, lcVm = Channel.compute_voltage_dependence(1, 1, 0, 295, 0.5, -70)        
+        self.assertAlmostEqual(loVm, 1, places = 5)        
+        self.assertAlmostEqual(lcVm, 1, places = 5)
+    def test_at_neg70mV(self):
+        loVm, lcVm = Channel.compute_voltage_dependence(1, 1, 1, 295, 0.5, -70)        
+        self.assertAlmostEqual(loVm, 0.23944, places = 5)        
+        self.assertAlmostEqual(lcVm, 4.17639, places = 5)
+    def test_at_neg80mV(self):
+        loVm, lcVm = Channel.compute_voltage_dependence(1, 1, 1, 295, 0.5, -80)        
+        self.assertAlmostEqual(loVm, 0.19522, places = 5)        
+        self.assertAlmostEqual(lcVm, 5.12255, places = 5)
+    def test_at_neg90mV(self):
+        loVm, lcVm = Channel.compute_voltage_dependence(1, 1, 1, 295, 0.5, -90)        
+        self.assertAlmostEqual(loVm, 0.15916, places = 5)        
+        self.assertAlmostEqual(lcVm, 6.28308, places = 5)
+    def test_at_70mV(self):
+        loVm, lcVm = Channel.compute_voltage_dependence(1, 1, 1, 295, 0.5, 70)        
+        self.assertAlmostEqual(loVm, 4.17639, places = 5)        
+        self.assertAlmostEqual(lcVm, 0.23944, places = 5)
+    def test_at_80mV(self):
+        loVm, lcVm = Channel.compute_voltage_dependence(1, 1, 1, 295, 0.5, 80)
+        self.assertAlmostEqual(loVm, 5.12255, places = 5)        
+        self.assertAlmostEqual(lcVm, 0.19522, places = 5)
+    def test_at_90mV(self):
+        loVm, lcVm = Channel.compute_voltage_dependence(1, 1, 1, 295, 0.5, 90)
+        self.assertAlmostEqual(loVm, 6.28308, places = 5)        
+        self.assertAlmostEqual(lcVm, 0.15916, places = 5)
+
+"""Unit Testing."""
+if __name__ == '__main__':
+    unittest.main()
+ 
+        
+        
     

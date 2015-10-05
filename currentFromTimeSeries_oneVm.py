@@ -30,8 +30,8 @@ def currentFromTimeSeries_oneVm(timeseries, gamma, Vm, Ex):
     Vm_inV = float(Vm * 10**-3)
     Ex_inV = float(Ex * 10**-3)
     print(len(timeseries))
-    if len(timeseries) > 1:
-        current_series = [N * gamma * (Vm_inV - Ex_inV) for N in timeseries]
-    else:
-        current_series = timeseries * gamma * (Vm_inV - Ex_inV)
+    #if len(timeseries) > 1:
+    current_series = [N * gamma * (Vm_inV - Ex_inV) for N in timeseries]
+    #else:
+    #current_series = timeseries * gamma * (Vm_inV - Ex_inV)
     return current_series
