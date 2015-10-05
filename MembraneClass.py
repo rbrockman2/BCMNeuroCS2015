@@ -22,11 +22,11 @@ class Membrane():
         our default membrane properties. User will also have option to set the 
         parameters. Temperature is in Kelvin. Time is in msec."""
         self.channel_set = []
-        self.Vm = 0
-        self.Temp = 298 #set default value to 298K
+        self.Vm = -65
+        self.Temp = 310 #set default value to 310K
         self.simulation_time = 100 #set default simulation time to 100ms
-        self.dt = 1 #set default dt to 1 ms
-        self.noise_amp = 0.0001
+        self.dt = 0.01 #set default dt to 0.01 ms
+        self.noise_amp = 1E-13
         
     def get_membrane_parameters(self):
         """This function will set the properties of the membranne either to 
@@ -153,7 +153,6 @@ class Membrane():
         Authors: by Gabe and Carli.    
         
         """
-        # Gabe and Carli take on the world of magic and marvel, a world of plot perfection
                
         print("Time Step in ms {0}".format(dt));
         print("Length of the time series {0}".format(len(current_TS)))                
@@ -183,25 +182,9 @@ class Membrane():
         plot.title('Current Time Series')
         plot.grid()
         plot.show()
-      
-      #plot.savefig('program_output.pdf')
-        
+       
     def make_plot(self):        
         current_TS = self.compute_current()
         noisy_TS = Membrane.add_noise(current_TS,self.noise_amp)        
         
         Membrane.plot_current_TS(noisy_TS,self.dt)    
-
-
-#dt=1
-#time = 8
-#amp = 0.05
-#channel_data = [1,2,3,4,5,6,7,8]
-#noise_currents = Membrane.add_noise(channel_data, amp)
-#x = Membrane.plot_current_TS(noise_currents, time, dt)
-
-
-
-    #TODO: Add Test Functions
-        
-        
