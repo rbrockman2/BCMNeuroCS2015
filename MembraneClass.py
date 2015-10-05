@@ -121,16 +121,7 @@ class Membrane():
 #x = Membrane.plot_current_TS(noise_currents, time, dt)
 
 
-                    
 
-
-if __name__ == "__main__": 
-    myMembrane = Membrane()
-    myMembrane.get_membrane_parameters()
-    myMembrane.create_channel_set()
-    myMembrane.make_plot()
-    
-    
     #TODO: Add Test Functions
         
         

@@ -6,13 +6,9 @@ Created on Wed Sep 30 20:40:30 2015
 """
 
 
-from Noisless_Channel import noiseless_channel
+from RandomSwitch import random_switch
 import numpy as np
-from currentFromTimeSeries_oneVm import currentFromTimeSeries_oneVm
 from math import exp
-
-import unittest
-
 
 class Channel():
     def __init__(self, **propDict):
@@ -161,7 +157,7 @@ class Channel():
         numChannel_TS = Channel.channelSummer(time, dt, self.N, lifeo_Vm, lifec_Vm)        
         
         # call Olivia to get the current
-        current_TS = currentFromTimeSeries_oneVm(numChannel_TS, self.gamma, self.Vm, self.E0)
+        current_TS = Channel.currentFromTimeSeries_oneVm(numChannel_TS, self.gamma, self.Vm, self.E0)
         
         return current_TS
         
@@ -190,7 +186,7 @@ class Channel():
         # this will be received from somewhere else, eventually. whoever calls it.
         bigSeries = []
         for i in range(nChannels):
-            timeSeries = noiseless_channel(lifetimeOpenVm, lifetimeClosedVm, totalTime, dt)  # pass dt onto noiseless_channel
+            timeSeries = random_switch(lifetimeOpenVm, lifetimeClosedVm, totalTime, dt)  # pass dt onto noiseless_channel
             print(len(timeSeries))
             bigSeries = [x + y for x, y in zip(bigSeries, timeSeries)]
             type(timeSeries)
@@ -200,53 +196,38 @@ class Channel():
                 bigSeries = timeSeries
         return bigSeries
             
-            
-            
-            
+    @staticmethod
+    def currentFromTimeSeries_oneVm(timeseries, gamma, Vm, Ex):
+        '''
+        Given the number of channels active at a series of times, this function
+        will return a vector of the current passed by these channels during this
+        series of time.
         
-
-class TestVoltageDependence(unittest.TestCase):    
-    def test_at_0mV(self):
-        loVm, lcVm = Channel.compute_voltage_dependence(1, 1, 1, 295, 0.5, 0)        
-        self.assertAlmostEqual(loVm, 1, places = 5)        
-        self.assertAlmostEqual(lcVm, 1, places = 5)
-    def test_at_0delta(self):
-        loVm, lcVm = Channel.compute_voltage_dependence(1, 1, 1, 295, 0, -70)        
-        self.assertAlmostEqual(loVm, 1, places = 5)        
-        self.assertAlmostEqual(lcVm, 17.44221, places = 5)
-    def test_at_0valence(self):
-        loVm, lcVm = Channel.compute_voltage_dependence(1, 1, 0, 295, 0.5, -70)        
-        self.assertAlmostEqual(loVm, 1, places = 5)        
-        self.assertAlmostEqual(lcVm, 1, places = 5)
-    def test_at_neg70mV(self):
-        loVm, lcVm = Channel.compute_voltage_dependence(1, 1, 1, 295, 0.5, -70)        
-        self.assertAlmostEqual(loVm, 0.23944, places = 5)        
-        self.assertAlmostEqual(lcVm, 4.17639, places = 5)
-    def test_at_neg80mV(self):
-        loVm, lcVm = Channel.compute_voltage_dependence(1, 1, 1, 295, 0.5, -80)        
-        self.assertAlmostEqual(loVm, 0.19522, places = 5)        
-        self.assertAlmostEqual(lcVm, 5.12255, places = 5)
-    def test_at_neg90mV(self):
-        loVm, lcVm = Channel.compute_voltage_dependence(1, 1, 1, 295, 0.5, -90)        
-        self.assertAlmostEqual(loVm, 0.15916, places = 5)        
-        self.assertAlmostEqual(lcVm, 6.28308, places = 5)
-    def test_at_70mV(self):
-        loVm, lcVm = Channel.compute_voltage_dependence(1, 1, 1, 295, 0.5, 70)        
-        self.assertAlmostEqual(loVm, 4.17639, places = 5)        
-        self.assertAlmostEqual(lcVm, 0.23944, places = 5)
-    def test_at_80mV(self):
-        loVm, lcVm = Channel.compute_voltage_dependence(1, 1, 1, 295, 0.5, 80)
-        self.assertAlmostEqual(loVm, 5.12255, places = 5)        
-        self.assertAlmostEqual(lcVm, 0.19522, places = 5)
-    def test_at_90mV(self):
-        loVm, lcVm = Channel.compute_voltage_dependence(1, 1, 1, 295, 0.5, 90)
-        self.assertAlmostEqual(loVm, 6.28308, places = 5)        
-        self.assertAlmostEqual(lcVm, 0.15916, places = 5)
-
-"""Unit Testing."""
-if __name__ == '__main__':
-    unittest.main()
- 
+        This function assumes that timeseries describes the number of ONE KIND of
+        channels that are open at a given time.
+        
+        Inputs:
+        timeseries  a vector of integers where the integer means the number of 
+                    channels active in the bin
+        gamma       single-channel conducance in S
+        Vm          voltage being clamped to in mV
+        Ex          0-current potential for the channel in mV
+        
+        Outputs:
+        current_series  the current in each time bin
+    
+        Written by Olivia.    
+        '''
+        Vm_inV = float(Vm * 10**-3)
+        Ex_inV = float(Ex * 10**-3)
+        print(len(timeseries))
+        #if len(timeseries) > 1:
+        current_series = [N * gamma * (Vm_inV - Ex_inV) for N in timeseries]
+        #else:
+        #current_series = timeseries * gamma * (Vm_inV - Ex_inV)
+        return current_series            
+                
+            
         
         
     

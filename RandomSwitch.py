@@ -11,7 +11,7 @@ from pandas import DataFrame
 from random import randint
 debug = False
 
-def noiseless_channel(open_lifetime, closed_lifetime, time, dt):  # added dt as input to this function instead of having default value
+def random_switch(open_lifetime, closed_lifetime, time, dt):  # added dt as input to this function instead of having default value
     def input_times(open = 0.0, close = 0.0, time_len = 0.0):
         """ Take user inputs for open/closed times in msec."""
         open = open_lifetime
