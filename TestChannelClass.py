@@ -2,41 +2,61 @@
 from ChannelClass import Channel
 import unittest
 
-class TestVoltageDependence(unittest.TestCase):    
-    def test_at_0mV(self):
-        loVm, lcVm = Channel.compute_voltage_dependence(1, 1, 1, 295, 0.5, 0)        
+
+class TestVoltageDependence(unittest.TestCase):   
+    def setUp(self):
+        myDict = {'name': 'test', 'lifeo': 1, 'lifec': 1,
+                  'zg': 1, 'd': 0.5, 'N': 1,
+                              'gamma': 10e-9, 'E0': 0}
+        self.standard_channel = Channel(**myDict)  
+        
+        
+        myDict = {'name': 'test', 'lifeo': 1, 'lifec': 1,
+                  'zg': 1, 'd': 0, 'N': 1,
+                              'gamma': 10e-9, 'E0': 0}
+        self.zero_delta_channel = Channel(**myDict)  
+
+        myDict = {'name': 'test', 'lifeo': 1, 'lifec': 1,
+                  'zg': 0, 'd': 0.5, 'N': 1,
+                              'gamma': 10e-9, 'E0': 0}
+        self.zero_valence_channel = Channel(**myDict)     
+         
+    def test_at_0mV(self):   
+        loVm, lcVm = self.standard_channel.compute_voltage_dependence(295, 0)        
         self.assertAlmostEqual(loVm, 1, places = 5)        
         self.assertAlmostEqual(lcVm, 1, places = 5)
-    def test_at_0delta(self):
-        loVm, lcVm = Channel.compute_voltage_dependence(1, 1, 1, 295, 0, -70)        
+    def test_at_0delta(self): 
+        loVm, lcVm = self.zero_delta_channel.compute_voltage_dependence(295, 
+                                                                        -70)       
         self.assertAlmostEqual(loVm, 1, places = 5)        
         self.assertAlmostEqual(lcVm, 17.44221, places = 5)
-    def test_at_0valence(self):
-        loVm, lcVm = Channel.compute_voltage_dependence(1, 1, 0, 295, 0.5, -70)        
+    def test_at_0valence(self):   
+        loVm, lcVm = self.zero_valence_channel.compute_voltage_dependence(295, 
+                                                                          -70)                
         self.assertAlmostEqual(loVm, 1, places = 5)        
         self.assertAlmostEqual(lcVm, 1, places = 5)
     def test_at_neg70mV(self):
-        loVm, lcVm = Channel.compute_voltage_dependence(1, 1, 1, 295, 0.5, -70)        
+        loVm, lcVm = self.standard_channel.compute_voltage_dependence(295, -70)         
         self.assertAlmostEqual(loVm, 0.23944, places = 5)        
         self.assertAlmostEqual(lcVm, 4.17639, places = 5)
     def test_at_neg80mV(self):
-        loVm, lcVm = Channel.compute_voltage_dependence(1, 1, 1, 295, 0.5, -80)        
+        loVm, lcVm = self.standard_channel.compute_voltage_dependence(295, -80)             
         self.assertAlmostEqual(loVm, 0.19522, places = 5)        
         self.assertAlmostEqual(lcVm, 5.12255, places = 5)
     def test_at_neg90mV(self):
-        loVm, lcVm = Channel.compute_voltage_dependence(1, 1, 1, 295, 0.5, -90)        
+        loVm, lcVm = self.standard_channel.compute_voltage_dependence(295, -90)             
         self.assertAlmostEqual(loVm, 0.15916, places = 5)        
         self.assertAlmostEqual(lcVm, 6.28308, places = 5)
     def test_at_70mV(self):
-        loVm, lcVm = Channel.compute_voltage_dependence(1, 1, 1, 295, 0.5, 70)        
+        loVm, lcVm = self.standard_channel.compute_voltage_dependence(295, 70)             
         self.assertAlmostEqual(loVm, 4.17639, places = 5)        
         self.assertAlmostEqual(lcVm, 0.23944, places = 5)
     def test_at_80mV(self):
-        loVm, lcVm = Channel.compute_voltage_dependence(1, 1, 1, 295, 0.5, 80)
+        loVm, lcVm = self.standard_channel.compute_voltage_dependence(295, 80)    
         self.assertAlmostEqual(loVm, 5.12255, places = 5)        
         self.assertAlmostEqual(lcVm, 0.19522, places = 5)
     def test_at_90mV(self):
-        loVm, lcVm = Channel.compute_voltage_dependence(1, 1, 1, 295, 0.5, 90)
+        loVm, lcVm = self.standard_channel.compute_voltage_dependence(295, 90)    
         self.assertAlmostEqual(loVm, 6.28308, places = 5)        
         self.assertAlmostEqual(lcVm, 0.15916, places = 5)
         

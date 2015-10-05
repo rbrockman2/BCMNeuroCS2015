@@ -259,7 +259,7 @@ class Channel():
         by the channels in each bin of dt, with the first bin corresponding to
         time 0 to dt, the second bin corresponding to time dt to 2*dt, etc.'''
         # call Uday/Kim to get lifetime open and closed
-        lifeo_Vm, lifec_Vm = Channel.compute_voltage_dependence(self.lifeo, self.lifec, self.zg, temp, self.d, self.Vm)
+        lifeo_Vm, lifec_Vm = Channel.compute_voltage_dependence(temp, self.Vm)
         
         # call Andrew to get the time series
         numChannel_TS = Channel.open_channel_TS(time, dt, self.N, lifeo_Vm, lifec_Vm)        
@@ -271,8 +271,7 @@ class Channel():
         
        # -*- coding: utf-8 -*-
 
-    @staticmethod
-    def compute_voltage_dependence(lo0=1, lc0=1, zg=1, T=295, delta=0.5, Vm=0):
+    def compute_voltage_dependence(self, T=295, Vm=0):
         """
         Created on Wed Sep 30 19:33:53 2015
         
@@ -285,9 +284,10 @@ class Channel():
         """
         F = 1E5
         R = 8.3
-        loVm = lo0 * exp((delta*zg*F*(Vm/1000))/(R*T))
-        lcVm = lc0 * exp(((1-delta)*-1*zg*F*(Vm/1000))/(R*T))
-        return loVm, lcVm
+
+        lifeo_Vm = self.lifeo * exp((self.d*self.zg*F*(Vm/1000))/(R*T))
+        lifec_Vm = self.lifec * exp(((1-self.d)*-1*self.zg*F*(Vm/1000))/(R*T))
+        return lifeo_Vm, lifec_Vm
 
     @staticmethod
     def open_channel_TS(total_time, dt, n_channels,
