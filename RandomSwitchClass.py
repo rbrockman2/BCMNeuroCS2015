@@ -30,6 +30,7 @@ class RandomSwitch():
     
     def run_switch_cycle(self, open_time, close_time, dt, g_open=1, start_open=False):
         switch_data_one_cycle = []
+        # to minimize roundup error here, we need to make sure dt is small enough, i.e. less than a tenth of the open or closed lifetime.
         n_open_steps = int(open_time/dt)
         n_close_steps = int(close_time/dt)
         opening = [g_open for i in range(n_open_steps)]
@@ -50,11 +51,11 @@ class RandomSwitch():
             n_steps = len(switch_data) # have to check channel_data instead of summing up open and closed times because in run-channel, int(open/dt) has roundup errors that makes us loose a few data points.
             if n_steps > int(run_time/dt):
                 break
-        # chopping it at interval
+        # We need to make sure the for loop can generate data that is longer than run_time/dt.
         trimmed_data = switch_data[0:int(run_time/dt)]
         return trimmed_data
 
-    def run_switch(self, run_time_ms=500, dt_ms=1):  # added dt as input to this function instead of having default value        
+    def run_switch(self, run_time_ms=500, dt_ms=0.1):  # added dt as input to this function instead of having default value. By Jiakun: I changed the default value to 0.1 msec so it would be a small enough number for short open or closed lifetime.      
         run_time = run_time_ms * 1e-3  # convert ms to s
         dt = dt_ms * 1e-3  # convert ms to s
 
