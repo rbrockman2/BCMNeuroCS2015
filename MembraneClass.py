@@ -66,15 +66,22 @@ class Membrane():
                     else: 
                         IsDtVerified = True
  
-    def create_channel_set(self):
-        more_channels = True
-        while more_channels == True:   
-            self.channel_set.append(Channel())
-            continueQuery = input("Add more channels?  (y/N) ")
-            if continueQuery.lower() == 'y':
-                more_channels = True
-            else:
-                more_channels = False
+    def create_channel_set(self, **inDict):
+        '''Takes a dictionary of dictionaries as input. If empty, query 
+        user for more information. If has channel object as a dictionary entry,
+        appends to channel_set.'''
+        if len(inDict) == 0:
+            more_channels = True
+            while more_channels == True:   
+                self.channel_set.append(Channel())
+                continueQuery = input("Add more channels?  (y/N) ")
+                if continueQuery.lower() == 'y':
+                    more_channels = True
+                else:
+                    more_channels = False
+        else:
+            for channName, channObj in inDict.items():
+                self.channel_set.append(channObj)
 
     def compute_current(self):  
         total_current_TS = []
@@ -84,7 +91,12 @@ class Membrane():
             if total_current_TS == []:
                 total_current_TS = channel_current_TS_local
             else:
-                total_current_TS += channel_current_TS_local
+                #total_current_TS += channel_current_TS_local
+                temp = total_current_TS
+                del total_current_TS
+                total_current_TS = []
+                for i in range(0, len(temp)):
+                    total_current_TS.append(temp[i] + channel_current_TS_local[i])
         return total_current_TS
     
     @staticmethod
