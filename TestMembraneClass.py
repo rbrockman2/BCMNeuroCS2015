@@ -11,6 +11,7 @@ import unittest
 
 class TestMembraneClass(unittest.TestCase):
     def testIfGoes(self):
+        '''Does the program run without crashing?'''
         myDict = {'name': 'test', 'lifeo': 10, 'lifec': 20,
                               'zg': 1, 'd': 0.8, 'Vm': -65, 'N': 100,
                               'gamma': 10e-9, 'E0': 0}
@@ -25,6 +26,40 @@ class TestMembraneClass(unittest.TestCase):
         m.create_channel_set(**chanDict)
         m.make_plot()
         self.assertEqual(1, 1)
+    def testIfZero(self):
+        '''When gammas are 0 is total current 0?'''
+        myDict = {'name': 'test', 'lifeo': 10, 'lifec': 20,
+                              'zg': 1, 'd': 0.8, 'Vm': -65, 'N': 100,
+                              'gamma': 0, 'E0': 0}
+        myDict2 = {'name': 'test', 'lifeo': 1, 'lifec': 3,
+                              'zg': 1, 'd': 0.8, 'Vm': -65, 'N': 100,
+                              'gamma': 0, 'E0': 0}
+        channel1 = Channel(**myDict)
+        channel2 = Channel(**myDict2)
+        chanDict = {channel1.name:channel1, channel2.name:channel2}
+        m = Membrane()
+        m.get_membrane_parameters()
+        m.create_channel_set(**chanDict)
+        timeseries = m.compute_current()
+        ans = sum(timeseries)
+        self.assertEqual(ans, 0)
+    def testDiffVm(self):
+        '''Does code accept mult. Vms?'''
+        myDict = {'name': 'test', 'lifeo': 1, 'lifec': 3,
+                              'zg': 1, 'd': 0.8, 'Vm': -65, 'N': 100,
+                              'gamma': 0, 'E0': 0}
+        myDict2 = {'name': 'test', 'lifeo': 1, 'lifec': 3,
+                              'zg': 1, 'd': 0.8, 'Vm': 65, 'N': 100,
+                              'gamma': 0, 'E0': 0}
+        channel1 = Channel(**myDict)
+        channel2 = Channel(**myDict2)
+        chanDict = {channel1.name:channel1, channel2.name:channel2}
+        m = Membrane()
+        m.get_membrane_parameters()
+        m.create_channel_set(**chanDict)
+        m.make_plot()
+        self.assertEqual(1, 1)
+        
         
 if __name__ == "__main__":
     unittest.main()
