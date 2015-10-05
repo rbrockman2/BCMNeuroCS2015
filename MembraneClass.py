@@ -17,7 +17,10 @@ class Membrane():
 
     @author: uday, kim
     """
-    def __init__(self):   
+    def __init__(self):
+        """This function creates an instance of the membrane class with 
+        our default membrane properties. User will also have option to set the 
+        parameters. Temperature is in Kelvin. Time is in msec."""
         self.channel_set = []
         self.Temp = 298 #set default value to 298K
         self.simulation_time = 100 #set default simulation time to 100ms
@@ -25,6 +28,8 @@ class Membrane():
         self.noise_amp = 0.0001
         
     def get_membrane_parameters(self):
+        """This function will set the properties of the membranne either to 
+        default values or can take user input."""
         IsTempVerified = False
         IsSimTimeVerified = False
         IsDtVerified = False
@@ -103,7 +108,16 @@ class Membrane():
     def add_noise(channel_data, amp):
         """Worked on by Gabe S. and Elizabeth L."""
         """ATTN: there is unit testing stuff in here you will need to get rid of for actual inputs"""
-        """ Adds noise to the on and off states to make it more biological-looking """
+        
+        """This function adds noise to the on and off states to make it more biologically realistic.
+        
+        Inputs: 
+            channel_data output of record_channel
+            
+        Outputs: 
+            array of channel_data with noise added
+        """
+        
         noise = np.random.normal(size=len(channel_data)) #takes the output from record_channel and makes a tuple of random numbers using Numpy
         scaled_noise = noise * amp #takes your randoms from the last line and scales them down to 5% of what they were
         chan_dat_np = np.array(channel_data)+scaled_noise #creates an array from our channel_data list input and adds our scaled noise to it
