@@ -17,6 +17,18 @@ class RandomSwitch():
         Inputs:
             open_lifetime:  mean time the switch stays open in ms
             closed_lifetime:  mean time the switch stays closed in ms"""
+        if open_lifetime < 0:
+            print("Negative lifetimes not allowed.")
+            open_lifetime = 0
+
+        if closed_lifetime < 0:
+            print("Negative lifetimes not allowed.")
+            closed_lifetime = 0
+
+        if open_lifetime == 0 and closed_lifetime == 0:
+            print("Channel must have a defined state.")
+            closed_lifetime = 1
+
         self.open_lifetime = float(open_lifetime)
         self.closed_lifetime = float(closed_lifetime)
 
@@ -35,8 +47,16 @@ class RandomSwitch():
         """
         switch_data_one_cycle = []
 
-        open_time = np.random.exponential(scale=self.open_lifetime)
-        closed_time = np.random.exponential(scale=self.closed_lifetime)
+        # Ensure random generator called with legitimate values.
+        if self.open_lifetime > 0:
+            open_time = np.random.exponential(scale=self.open_lifetime)
+        else:
+            open_time = 0
+
+        if self.closed_lifetime > 0:
+            closed_time = np.random.exponential(scale=self.closed_lifetime)
+        else:
+            closed_time = 0
 
         n_open_steps = int(open_time/dt)
         n_close_steps = int(closed_time/dt)
