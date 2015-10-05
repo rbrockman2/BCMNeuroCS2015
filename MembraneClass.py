@@ -84,7 +84,12 @@ class Membrane():
             if total_current_TS == []:
                 total_current_TS = channel_current_TS_local
             else:
-                total_current_TS += channel_current_TS_local
+                #total_current_TS += channel_current_TS_local
+                temp = total_current_TS
+                del total_current_TS
+                total_current_TS = []
+                for i in range(0, len(temp)):
+                    total_current_TS.append(temp[i] + channel_current_TS_local[i])
         return total_current_TS
     
     @staticmethod
