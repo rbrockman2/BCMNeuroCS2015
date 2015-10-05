@@ -32,6 +32,20 @@ class RandomSwitch():
         self.open_lifetime = float(open_lifetime)
         self.closed_lifetime = float(closed_lifetime)
 
+        self.make_more_random()  # Initialize pool of random intervals.
+
+    def make_more_random(self):
+        """Creates a pool of random open and closed intervals."""
+        self.random_index = 0
+        self.random_max = 1000
+
+        if self.open_lifetime > 0:
+            self.random_open = np.random.exponential(scale=self.open_lifetime,
+                                                     size=self.random_max)
+        if self.closed_lifetime > 0:
+            self.random_closed = np.random.exponential(
+                scale=self.closed_lifetime, size=self.random_max)
+
     def run_switch_cycle(self, dt, start_open=False):
         """Generates a sequence of 1s and 0s corresponding to whether the
         switch is open or closed at any given time step.  Returned list
@@ -47,16 +61,23 @@ class RandomSwitch():
         """
         switch_data_one_cycle = []
 
-        # Ensure random generator called with legitimate values.
+        # Draw from pool of random intervals.
         if self.open_lifetime > 0:
-            open_time = np.random.exponential(scale=self.open_lifetime)
+            open_time = self.random_open[self.random_index]
         else:
             open_time = 0
+            closed_time = 100  # Switch is stuck closed.
 
         if self.closed_lifetime > 0:
-            closed_time = np.random.exponential(scale=self.closed_lifetime)
+            closed_time = self.random_closed[self.random_index]
         else:
             closed_time = 0
+            open_time = 100  # Switch is stuck open.
+
+        # Refill random pool if necessary
+        self.random_index += 1
+        if self.random_index >= self.random_max:
+            self.make_more_random()
 
         n_open_steps = int(open_time/dt)
         n_close_steps = int(closed_time/dt)
