@@ -53,7 +53,7 @@ class Membrane():
                     else:
                         IsSimTimeVerified = True
             while IsDtVerified is False:
-                dtStep = input("Enter dt step (msec): ")
+                dtStep = input("Enter dt step (<1msec): ")
                 try:
                     self.dt = float(dtStep)
                 except ValueError:
