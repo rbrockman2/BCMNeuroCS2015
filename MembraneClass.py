@@ -20,15 +20,51 @@ class Membrane():
     def __init__(self):   
         self.channel_set = []
         self.Temp = 298 #set default value to 298K
-        self.simulation_time = 100 #set default simulation time to 20ms
-
+        self.simulation_time = 100 #set default simulation time to 100ms
+        self.dt = 1 #set default dt to 1 ms
         self.noise_amp = 0.0001
         
     def get_membrane_parameters(self):
-        # Todo:  add option to use default parameters.
-        self.Temp = int(input("Enter Temperature (Kelvin): "))
-        self.simulation_time = int(input("Enter Total Simulation Time (msec): "))
-        self.dt = float(input("Enter dt step (msec): "))
+        IsTempVerified = False
+        IsSimTimeVerified = False
+        IsDtVerified = False
+        UseDefaultYN = input("Would you like to use defaults for Temp, Sim Time and dt? (Y/N) :")
+        if UseDefaultYN.lower() != 'y':
+            while IsTempVerified is False:
+                Temperature = input("Enter Temperature (0K - 400K): ")
+                try:
+                    self.Temp = int(Temperature)
+                except ValueError:
+                    print("Error: Temperatures are outside expected range (0K - 400K)")                
+                else:
+                    if self.Temp < 0 or self.Temp > 400:
+                        print("Error: Temperatures are outside expected range (0K - 400K)")    
+                    else:
+                        IsTempVerified = True
+            while IsSimTimeVerified is False:
+                SimTime = input("Enter Total Simulation Time (msec): ")
+                try:
+                    self.simulation_time = int(SimTime)
+                except ValueError:
+                    print("Error: Simulation Time was not entered as a positive integer") 
+                else:
+                    if self.simulation_time <= 0:
+                        print("Error: Simulation Time was not entered as a positive integer")
+                    else:
+                        IsSimTimeVerified = True
+            while IsDtVerified is False:
+                dtStep = input("Enter dt step (msec): ")
+                try:
+                    self.dt = float(dtStep)
+                except ValueError:
+                    print("Error: dt step was not entered as a positive integer") 
+                else:
+                    if self.dt <= 0:
+                        print("Error: dt step was not entered as a positive integer") 
+                    elif self.dt > self.simulation_time:
+                        print("Error: dt step entered is longer than Simulation time")
+                    else: 
+                        IsDtVerified = True
  
     def create_channel_set(self):
         more_channels = True
