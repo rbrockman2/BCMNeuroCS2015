@@ -10,7 +10,13 @@ from RandomSwitchClass import RandomSwitch
 import numpy as np
 from math import exp
 
+
 class Channel():
+    """This class models the properties of all of the channels of a specific
+    type in a cell membrane.  There can be many individual channels for
+    each channel type object, each of which will flip open and closed randomly
+    according to specified kinetic properties which can be affected by
+    membrane voltage."""
     def __init__(self, **propDict):
         '''Creates an instance of the channel class with properties:
             lifeo   lifetime open in ms at 0 mV
@@ -256,7 +262,7 @@ class Channel():
         lifeo_Vm, lifec_Vm = Channel.compute_voltage_dependence(self.lifeo, self.lifec, self.zg, temp, self.d, self.Vm)
         
         # call Andrew to get the time series
-        numChannel_TS = Channel.channelSummer(time, dt, self.N, lifeo_Vm, lifec_Vm)        
+        numChannel_TS = Channel.open_channel_TS(time, dt, self.N, lifeo_Vm, lifec_Vm)        
         
         # call Olivia to get the current
         current_TS = Channel.currentFromTimeSeries_oneVm(numChannel_TS, self.gamma, self.Vm, self.E0)
@@ -282,23 +288,40 @@ class Channel():
         loVm = lo0 * exp((delta*zg*F*(Vm/1000))/(R*T))
         lcVm = lc0 * exp(((1-delta)*-1*zg*F*(Vm/1000))/(R*T))
         return loVm, lcVm
-    
-    @staticmethod    
-    def channelSummer(totalTime, dt, nChannels, lifetimeOpenVm, lifetimeClosedVm):  # added dt as input to this function
-        # this will be received from somewhere else, eventually. whoever calls it.
-        randomSwitch = RandomSwitch(lifetimeOpenVm, lifetimeClosedVm)
-        bigSeries = []
-        for i in range(nChannels):
-            timeSeries = randomSwitch.run_switch(totalTime, dt)  # pass dt onto noiseless_channel
-            print(len(timeSeries))
-            bigSeries = [x + y for x, y in zip(bigSeries, timeSeries)]
-            type(timeSeries)
-            if i>0:
-                bigSeries = np.add(bigSeries, timeSeries)
+
+    @staticmethod
+    def open_channel_TS(total_time, dt, n_channels,
+                        lifetime_open, lifetime_closed):
+        """Generates a time series of how many channels are open at each time
+        step.  This is done by generating a time series for whether each
+        individual channel is open at each time step and then summing these
+        series.
+
+        Inputs:
+            total_time:  length of time series in ms
+            dt:  duration of time step in ms
+            n_channels:  number of channels
+            lifetime_open:  mean open lifetime of a channel
+            lifetime_closed:  mean closed lifetime of a channel
+
+        Outputs:
+            summed_series:  time series of how many channels are open at each
+                time step.
+        """
+        # The random switch will generate a time series for a single channel.
+        random_switch = RandomSwitch(lifetime_open, lifetime_closed)
+        summed_series = []  # Accumulator
+        for i in range(n_channels):
+            single_series = random_switch.run_switch(total_time, dt)
+            if i > 0:
+                # Add series from single channel to total.
+                # Time series are converted to lists to maintain type
+                #   consistency.
+                summed_series = np.add(summed_series, single_series).tolist()
             else:
-                bigSeries = timeSeries
-        return bigSeries
-            
+                summed_series = single_series
+        return summed_series
+
     @staticmethod
     def currentFromTimeSeries_oneVm(timeseries, gamma, Vm, Ex):
         '''
