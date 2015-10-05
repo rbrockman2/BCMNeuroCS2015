@@ -6,15 +6,15 @@ Created on Wed Sep 30 20:40:30 2015
 """
 
 
-from RandomSwitch import random_switch
+from RandomSwitchClass import RandomSwitch
 import numpy as np
 from math import exp
 
 class Channel():
     def __init__(self, **propDict):
         '''Creates an instance of the channel class with properties:
-            lifeo   lifetime open in ms
-            lifec   lifetime closed in ms
+            lifeo   lifetime open in ms at 0 mV
+            lifec   lifetime closed in ms at 0 mV
             zg      gating charges
             d       delta
             Vm      voltage clamping channel to (mV)
@@ -22,7 +22,7 @@ class Channel():
             name    name of the channel
             gamma   single-channel conductance (S)
             E0      reversal potential for the channel (mV)
-        O
+        
         You have a few different options for setting channel proerties.
         You may:
             1) send a populated dictionary to the class with all of the keys:
@@ -147,9 +147,7 @@ class Channel():
         these channels in each bin (still of width dt).
             This function will return a vector with the current being passed
         by the channels in each bin of dt, with the first bin corresponding to
-        time 0 to dt, the second bin corresponding to time dt to 2*dt, etc.
-        
-        NOTE: NEED TO MODIFY channelSummer TO TAKE dt'''
+        time 0 to dt, the second bin corresponding to time dt to 2*dt, etc.'''
         # call Uday/Kim to get lifetime open and closed
         lifeo_Vm, lifec_Vm = Channel.compute_voltage_dependence(self.lifeo, self.lifec, self.zg, temp, self.d, self.Vm)
         
@@ -184,9 +182,10 @@ class Channel():
     @staticmethod    
     def channelSummer(totalTime, dt, nChannels, lifetimeOpenVm, lifetimeClosedVm):  # added dt as input to this function
         # this will be received from somewhere else, eventually. whoever calls it.
+        randomSwitch = RandomSwitch(lifetimeOpenVm, lifetimeClosedVm)
         bigSeries = []
         for i in range(nChannels):
-            timeSeries = random_switch(lifetimeOpenVm, lifetimeClosedVm, totalTime, dt)  # pass dt onto noiseless_channel
+            timeSeries = randomSwitch.run_switch(totalTime, dt)  # pass dt onto noiseless_channel
             print(len(timeSeries))
             bigSeries = [x + y for x, y in zip(bigSeries, timeSeries)]
             type(timeSeries)

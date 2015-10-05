@@ -6,17 +6,21 @@ Created on Wed Sep 30 19:18:24 2015
 """
 
 import numpy as np
-import matplotlib.pyplot as plt
-from pandas import DataFrame
 from random import randint
 debug = False
 
-def random_switch(open_lifetime, closed_lifetime, time, dt):  # added dt as input to this function instead of having default value
-    def input_times(open = 0.0, close = 0.0, time_len = 0.0):
+
+class RandomSwitch():
+    
+    def __init__(self, open_lifetime, closed_lifetime):   
+        self.open_lifetime = open_lifetime
+        self.closed_lifetime = closed_lifetime
+
+
+    def input_times(self,time_len = 0.0):
         """ Take user inputs for open/closed times in msec."""
-        open = open_lifetime
-        close = closed_lifetime
-        time_len = time
+        open = self.open_lifetime
+        close = self.closed_lifetime
         if open:
             mean_open_time = float(open) * 1e-3 # take ms convert to s
         else: 
@@ -35,6 +39,7 @@ def random_switch(open_lifetime, closed_lifetime, time, dt):  # added dt as inpu
         #print(mean_open_time, mean_close_time, interval)   
         return mean_open_time, mean_close_time, interval
     
+    @staticmethod
     def get_randoms(mean_open_time, mean_close_time, interval):
         """ Generates open and close times randomly """
         too_short = True
@@ -50,21 +55,10 @@ def random_switch(open_lifetime, closed_lifetime, time, dt):  # added dt as inpu
                 samples *= 2
         return opens, closes
     
-    def record_channel(interval, dt):
-        """ Not sure why this must exist """
-        '''def trim_times(open_time, close_time, over_shoot, start_state):
-            if start_state and over_shoot > close_time:
-                open_time = step_time - over_shoot
-                close_time = 0.0
-            elif start_state and over_shoot <= close_time:
-                close_time = step_time - over_shoot - open_time
-            elif not start_state and over_shoot > open_time:
-                close_time = step_time - over_shoot
-                open_time = 0.0
-            elif not start_state and over_shoot <= open_time:
-                open_time = step_time - over_shoot - close_time
-            return open_time, close_time'''
-        
+    
+    
+    
+    def record_channel(interval, dt, opens, closes, mean_open_time, mean_close_time):        
         def run_channel(open, closed, g_open=1, start_open=False):
             channel = []
             n_open_steps = int(open/dt)
@@ -78,8 +72,6 @@ def random_switch(open_lifetime, closed_lifetime, time, dt):  # added dt as inpu
             return channel
     
         channel_data = []
-        over_shot = False
-        cum_time = 0.0
         start_state = randint(0, 1)  # initial state is 0=closed, or 1=open
         for open, close in zip(opens, closes):
             open_time = open * mean_open_time
@@ -88,34 +80,21 @@ def random_switch(open_lifetime, closed_lifetime, time, dt):  # added dt as inpu
                                         start_open=start_state)
             n_steps = len(channel_data) # have to check channel_data instead of summing up open and closed times because in run-channel, int(open/dt) has roundup errors that makes us loose a few data points.
             if n_steps > int(interval/dt):
-                over_shot = True
                 break
         # chopping it at interval
         trimmed_data = channel_data[0:int(interval/dt)]
         return trimmed_data
 
+    def run_switch(self, run_time, dt):  # added dt as input to this function instead of having default value
     
+            
+        # Receive inputs for open, closed, and total times
+        mean_open_time, mean_close_time, interval = self.input_times(run_time)
+        # Concoct random open and closed times    
+        opens, closes = RandomSwitch.get_randoms(mean_open_time, mean_close_time, interval)
 
-    # Receive inputs for open, closed, and total times
-    mean_open_time, mean_close_time, interval = input_times(open_lifetime, closed_lifetime, time)
-    # Concoct random open and closed times    
-    opens, closes = get_randoms(mean_open_time, mean_close_time, interval)
-    #open_avg = opens.mean()
-    #closed_avg = closes.mean()
-    #print(open_avg, closed_avg)
-    #dt = 1e-5  # commented out to test sending dt as input
-    dt = dt/1000  # convert ms input into seconds units
-    channel_data = record_channel(interval, dt)
-    #channel_times = [i*dt for i in range(len(channel_data))]
+        dt = dt/1000  # convert ms input into seconds units
+        channel_data = RandomSwitch.record_channel(interval, dt, opens,closes,mean_open_time, mean_close_time)
 
-
-    # Data formatting
-    #data = {'time': channel_times, 'record': channel_data}
-    
-    return channel_data
-    # Plotting
-    #my_record = DataFrame(data)
-    #my_record.plot() 
-    #plt.plot(data['time'], data['record'])
-    # plt.axes([0.0, 0.3, 0, 1.5])
-    #plt.show()
+        return channel_data
+  

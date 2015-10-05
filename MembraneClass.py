@@ -26,9 +26,9 @@ class Membrane():
         
     def get_membrane_parameters(self):
         # Todo:  add option to use default parameters.
-        self.Temp = int(input("Enter Temperature (Kelvin) ::"))
-        self.simulation_time = int(input("Enter Total Simulation Time (msec)::"))
-        self.dt = float(input("Enter dt step (msec)"))
+        self.Temp = int(input("Enter Temperature (Kelvin): "))
+        self.simulation_time = int(input("Enter Total Simulation Time (msec): "))
+        self.dt = float(input("Enter dt step (msec): "))
  
     def create_channel_set(self):
         more_channels = True
