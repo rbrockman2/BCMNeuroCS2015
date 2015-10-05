@@ -23,5 +23,8 @@ class TestMembraneClass(unittest.TestCase):
         m = Membrane()
         m.get_membrane_parameters()
         m.create_channel_set(**chanDict)
-        m.makePlot()
-        self.AssertsEquals(1, 1)
+        m.make_plot()
+        self.assertEqual(1, 1)
+        
+if __name__ == "__main__":
+    unittest.main()
