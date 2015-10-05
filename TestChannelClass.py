@@ -120,7 +120,26 @@ class TestOpenChannelTS(unittest.TestCase):
         self.assertEqual(Channel.open_channel_TS(0,0.5,100,1,0),[])
         self.assertEqual(Channel.open_channel_TS(1,0.5,100,0,1),[0,0])
         
-    
+class TestComputeCurrentTS(unittest.TestCase):
+    def setUp(self):
+        myDict = {'name': 'Na', 'lifeo': 10, 'lifec': 30,
+                              'zg': 0, 'd': 0.5, 'N': 100,
+                              'gamma': 10e-9, 'E0': 60}
+        self.channel = Channel(**myDict)       
+
+    def testNoDriving(self):
+        current_TS = self.channel.computeCurrentTS(60,100,0.1,300)
+        mean_current_TS = sum(current_TS) / float(len(current_TS))
+        self.assertEqual(len(current_TS), 1000)
+        self.assertEqual(mean_current_TS, 0)
+        
+    def test100mVDriving(self):
+        current_TS = self.channel.computeCurrentTS(-40,1000,0.1,300)
+        mean_current_TS = sum(current_TS) / float(len(current_TS))
+        self.assertEqual(len(current_TS), 10000)
+        self.assertAlmostEqual(mean_current_TS, -2.5e-8, 2)
+        
+        
         
         
 
