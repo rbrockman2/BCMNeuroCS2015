@@ -78,16 +78,120 @@ class Channel():
         in the dictionary.
             Note that this function isn't equipped to deal with variable
         dictionary keys. Also note that '''
+        IsReversalPotentialVerified = False        
+        IsOpenLifetimeVerified = False
+        IsClosedLifetimeVerified = False
+        IsGammaVerified = False
+        IsDeltaVerified = False
+        IsGatingChargeVerified = False
+        IsMembraneVoltageVerified = False
+        IsChannelNumVerified = False
+        
         if len(thisDict) == 0:
             name = input("What is this channel's name?: ")
-            Erev = float(input("What is this channel's 0-current potential? (mV): "))
-            openlife = float(input("What is this channel's open lifetime (msec)?: "))
-            closedlife = float(input("What is this channel's closed lifetime (msec)?: "))
-            gamma = float(input("What is the single-channel conductance (S)?: "))
-            gatingCharges = float(input("How many gating charges does this channel have?: "))
-            delta = float(input("What is delta for this channel's gating charge?: "))
-            membraneVoltage = float(input("At what voltage would you like to clamp this channel (mV)?: "))
-            number = int(input("How many of these channels are there?: "))
+            while IsReversalPotentialVerified is False:
+                ErevStr = input("What is this channel's 0-current potential? (mV): ")
+                try:
+                    Erev = float(ErevStr)
+                except ValueError:
+                    print("Error: Reversal Potential entered is not a floating point number")
+                else:
+                    if Erev < -200 or Erev > 400:
+                        print("Warning: ErevStr is outside -200mV to 400mV range")  
+                        IsItOK = input("Is this OK (Y/N)?")
+                        if IsItOK.lower() == 'y':
+                            IsReversalPotentialVerified = True
+                        else:
+                            IsReversalPotentialVerified = False
+                    else:
+                        IsReversalPotentialVerified = True
+            
+            while IsOpenLifetimeVerified is False:
+                openlifeStr = input("What is this channel's open lifetime (msec)?: ")
+                try:
+                    openlife = float(openlifeStr)
+                except ValueError:
+                    print("Error: Open Lifetime was not entered as a positive floating point number") 
+                else:
+                    if openlife <= 0:
+                        print("Error: Open Lifetime was not entered as a positive floating point number")
+                    else:
+                        IsOpenLifetimeVerified = True
+                        
+            while IsClosedLifetimeVerified is False:     
+                closedlifeStr = input("What is this channel's closed lifetime (msec)?: ")
+                try:
+                    closedlife = float(closedlifeStr)
+                except ValueError:
+                    print("Error: Closed Lifetime was not entered as a positive floating point number") 
+                else:
+                    if closedlife <= 0:
+                        print("Error: Closed Lifetime was not entered as a positive floating point number")
+                    else:
+                        IsClosedLifetimeVerified = True
+            
+            while IsGammaVerified is False:     
+                gammaStr = input("What is the single-channel conductance (S)?: ")
+                try:
+                    gamma = float(gammaStr)
+                except ValueError:
+                    print("Error: Single Channel Conductance was not entered as a positive floating point number") 
+                else:
+                    if gamma <= 0:
+                        print("Error: Single Channel Conductance was not entered as a positive floating point number") 
+                    else:
+                        IsGammaVerified = True
+            
+            while IsGatingChargeVerified is False:     
+                gatingChargesStr = input("How many gating charges does this channel have?: ")
+                try:
+                    gatingCharges = float(gatingChargesStr)
+                except ValueError:
+                    print("Error: Gating Charge was not entered as a floating point number") 
+                else:
+                    IsGatingChargeVerified = True
+            
+            while IsDeltaVerified is False:     
+                deltaStr = input("What is delta for this channel's gating charge (0-1)?: ")
+                try:
+                    delta = float(deltaStr)
+                except ValueError:
+                    print("Error: Delta was not entered as a number between 0 and 1") 
+                else:
+                    if delta < 0 or delta > 1:
+                        print("Error: Delta was not entered as a number between 0 and 1") 
+                    else:
+                        IsDeltaVerified = True
+            
+            while IsMembraneVoltageVerified is False:     
+                membraneVoltageStr = input("At what voltage would you like to clamp this channel (mV)?: ")
+                try:
+                    membraneVoltage = float(membraneVoltageStr)
+                except ValueError:
+                    print("Error: Membrane Voltage was not entered as a number") 
+                else:
+                    if membraneVoltage < -200 or membraneVoltage > 400:
+                        print("Warning: Membrane Voltage is outside -200mV to 400mV range")
+                        IsItOK = input("Is this OK (Y/N)?")
+                        if IsItOK.lower() == 'y':
+                            IsMembraneVoltageVerified = True
+                        else:
+                            IsMembraneVoltageVerified = False
+                    else:
+                        IsMembraneVoltageVerified = True
+            
+            while IsChannelNumVerified is False:
+                numberStr = input("How many of these channels are there?: ")
+                try:
+                    number = int(numberStr)
+                except ValueError:
+                    print("Error: Number of channels entered is not a positive integer")                
+                else:
+                    if number <= 0:
+                        print("Error: Number of channels entered is not a positive integer")    
+                    else:
+                        IsChannelNumVerified = True
+    
         else:
             # default everything to 0
             Erev = 0
