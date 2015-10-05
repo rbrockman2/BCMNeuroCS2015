@@ -22,7 +22,7 @@ class RandomSwitch():
             opens = np.random.exponential(size=samples) # random intervals, mean 1
             closes = np.random.exponential(size=samples) # random intervals, mean 1
             time_covered = self.open_lifetime * sum(opens) + self.closed_lifetime * sum(closes)
-            if time_covered > run_time:
+            if time_covered > run_time + 10*samples*(self.open_lifetime + self.closed_lifetime): # This would account for the data points lost due to rounding errors in line 34 and 35.
                 too_short = False
             else:
                 samples *= 2
@@ -50,6 +50,7 @@ class RandomSwitch():
             switch_data += self.run_switch_cycle(open_time, close_time, dt, start_open=start_state)
             n_steps = len(switch_data) # have to check channel_data instead of summing up open and closed times because in run-channel, int(open/dt) has roundup errors that makes us loose a few data points.
             if n_steps > int(run_time/dt):
+                #print('break')
                 break
         # We need to make sure the for loop can generate data that is longer than run_time/dt.
         trimmed_data = switch_data[0:int(run_time/dt)]
