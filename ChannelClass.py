@@ -23,7 +23,6 @@ class Channel():
             lifec   lifetime closed in ms at 0 mV
             zg      gating charges
             d       delta
-            Vm      voltage clamping channel to (mV)
             N       number of this kind of channel
             name    name of the channel
             gamma   single-channel conductance (S)
@@ -32,25 +31,25 @@ class Channel():
         You have a few different options for setting channel proerties.
         You may:
             1) send a populated dictionary to the class with all of the keys:
-                name, lifeo, lifec, zg, d, Vm, N, gamma, E0
+                name, lifeo, lifec, zg, d, N, gamma, E0
                 
                 ** MAKE SURE YOU USE THE EXACT SAME KEY CASE AND SPELLING **
                 
                     e.g. 
                     myDict = {'name': 'test', 'lifeo': 10, 'lifec': 20,
-                              'zg': 1, 'd': 0.8, 'Vm': -65, 'N': 100,
+                              'zg': 1, 'd': 0.8, 'N': 100,
                               'gamma': 10e-9, 'E0': 0}
                     myChannel = Channel(**myDict)
                 this class is not equipped to deal with different input keys
             2) send a populated dictionary to the class with  some of the keys:
-                name, lifeo, lifec, zg, d, Vm, N, gamma, E0
+                name, lifeo, lifec, zg, d, N, gamma, E0
                 
                 ** any key you omit will default to 0 (or generic in the case
                 of name) **
                 
                     e.g.
                     myDict = {'name': 'test', 'lifeo': 10, 'lifec': 20,
-                              'Vm': -65, 'N': 100, 'gamma': 10e-9}
+                              'N': 100, 'gamma': 10e-9}
                     myChannel = Channel(**myDict)
             3) send an empty dictionary to the class
                 ** this will prompt the class to ask the user to input
@@ -65,12 +64,11 @@ class Channel():
         amount of time.
                 
         '''
-        ui_name, ui_lifeo, ui_lifec, ui_zg, ui_d, ui_Vm, ui_N, ui_E0, ui_gamma = self.getParams(**propDict)
+        ui_name, ui_lifeo, ui_lifec, ui_zg, ui_d, ui_N, ui_E0, ui_gamma = self.getParams(**propDict)
         self.lifeo = ui_lifeo
         self.lifec = ui_lifec
         self.zg = ui_zg
         self.d = ui_d
-        self.Vm = ui_Vm
         self.N = ui_N
         self.name = ui_name
         self.E0 = ui_E0
@@ -90,7 +88,6 @@ class Channel():
         IsGammaVerified = False
         IsDeltaVerified = False
         IsGatingChargeVerified = False
-        IsMembraneVoltageVerified = False
         IsChannelNumVerified = False
         
         if len(thisDict) == 0:
@@ -167,25 +164,7 @@ class Channel():
                     if delta < 0 or delta > 1:
                         print("Error: Delta was not entered as a number between 0 and 1") 
                     else:
-                        IsDeltaVerified = True
-            
-            while IsMembraneVoltageVerified is False:     
-                membraneVoltageStr = input("At what voltage would you like to clamp this channel (mV)?: ")
-                try:
-                    membraneVoltage = float(membraneVoltageStr)
-                except ValueError:
-                    print("Error: Membrane Voltage was not entered as a number") 
-                else:
-                    if membraneVoltage < -200 or membraneVoltage > 400:
-                        print("Warning: Membrane Voltage is outside -200mV to 400mV range")
-                        IsItOK = input("Is this OK (Y/N)?")
-                        if IsItOK.lower() == 'y':
-                            IsMembraneVoltageVerified = True
-                        else:
-                            IsMembraneVoltageVerified = False
-                    else:
-                        IsMembraneVoltageVerified = True
-            
+                        IsDeltaVerified = True       
             while IsChannelNumVerified is False:
                 numberStr = input("How many of these channels are there?: ")
                 try:
@@ -207,7 +186,6 @@ class Channel():
             gatingCharges = 0
             number = 0
             delta = 0
-            membraneVoltage = 0
             name = 'generic'
             
             # pull the given values from the dictionary
@@ -234,19 +212,16 @@ class Channel():
                 elif key == 'd':
                     delta = val
                     count += 1
-                elif key == 'Vm':
-                    membraneVoltage = val
-                    count += 1
                 elif key == 'N':
                     number = val
                     count += 1
                 else:
                     print('Found unrecognized channel property "{0}"'.format(key))
-            if count < 9:
+            if count < 8:
                 print('WARNING: Some channel properties left at default values.')
-        return name, openlife, closedlife, gatingCharges, delta, membraneVoltage, number, Erev, gamma
+        return name, openlife, closedlife, gatingCharges, delta, number, Erev, gamma
         
-    def computeCurrentTS(self, time, dt, temp):
+    def computeCurrentTS(self, Vm, time, dt, temp):
         '''This function is set up to be called from outside (i.e., from a Membrane
         object that contains this channel object). It takes time (total duration
         of the recording), dt (the size of the time step), and temp (temperature in K).
@@ -259,13 +234,13 @@ class Channel():
         by the channels in each bin of dt, with the first bin corresponding to
         time 0 to dt, the second bin corresponding to time dt to 2*dt, etc.'''
         # call Uday/Kim to get lifetime open and closed
-        lifeo_Vm, lifec_Vm = Channel.compute_voltage_dependence(temp, self.Vm)
+        lifeo_Vm, lifec_Vm = self.compute_voltage_dependence(temp, Vm)
         
         # call Andrew to get the time series
         numChannel_TS = Channel.open_channel_TS(time, dt, self.N, lifeo_Vm, lifec_Vm)        
         
         # call Olivia to get the current
-        current_TS = Channel.currentFromTimeSeries_oneVm(numChannel_TS, self.gamma, self.Vm, self.E0)
+        current_TS = Channel.currentFromTimeSeries_oneVm(numChannel_TS, self.gamma, Vm, self.E0)
         
         return current_TS
         

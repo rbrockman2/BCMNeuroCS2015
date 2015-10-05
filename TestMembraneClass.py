@@ -23,10 +23,10 @@ class TestMembraneClass(unittest.TestCase):
     def testIfGoes(self):
         '''Does the program run without crashing?'''
         myDict = {'name': 'test', 'lifeo': 10, 'lifec': 20,
-                              'zg': 1, 'd': 0.8, 'Vm': -65, 'N': 100,
+                              'zg': 1, 'd': 0.8, 'N': 100,
                               'gamma': 10e-9, 'E0': 0}
         myDict2 = {'name': 'test', 'lifeo': 1, 'lifec': 3,
-                              'zg': 1, 'd': 0.8, 'Vm': -65, 'N': 100,
+                              'zg': 1, 'd': 0.8, 'N': 100,
                               'gamma': 10e-9, 'E0': 0}
         channel1 = Channel(**myDict)
         channel2 = Channel(**myDict2)
@@ -39,10 +39,10 @@ class TestMembraneClass(unittest.TestCase):
     def testIfZero(self):
         '''When gammas are 0 is total current 0?'''
         myDict = {'name': 'test', 'lifeo': 10, 'lifec': 20,
-                              'zg': 1, 'd': 0.8, 'Vm': -65, 'N': 100,
+                              'zg': 1, 'd': 0.8, 'N': 100,
                               'gamma': 0, 'E0': 0}
         myDict2 = {'name': 'test', 'lifeo': 1, 'lifec': 3,
-                              'zg': 1, 'd': 0.8, 'Vm': -65, 'N': 100,
+                              'zg': 1, 'd': 0.8, 'N': 100,
                               'gamma': 0, 'E0': 0}
         channel1 = Channel(**myDict)
         channel2 = Channel(**myDict2)
@@ -53,13 +53,13 @@ class TestMembraneClass(unittest.TestCase):
         timeseries = m.compute_current()
         ans = sum(timeseries)
         self.assertEqual(ans, 0)
-    def testDiffVm(self):
+    def testDiffVm(self): # TODO, fix this, Vm moved to Membrane class
         '''Does code accept mult. Vms?'''
         myDict = {'name': 'test', 'lifeo': 1, 'lifec': 3,
-                              'zg': 1, 'd': 0.8, 'Vm': -65, 'N': 100,
+                              'zg': 1, 'd': 0.8, 'N': 100,
                               'gamma': 0, 'E0': 0}
         myDict2 = {'name': 'test', 'lifeo': 1, 'lifec': 3,
-                              'zg': 1, 'd': 0.8, 'Vm': 65, 'N': 100,
+                              'zg': 1, 'd': 0.8, 'N': 100,
                               'gamma': 0, 'E0': 0}
         channel1 = Channel(**myDict)
         channel2 = Channel(**myDict2)

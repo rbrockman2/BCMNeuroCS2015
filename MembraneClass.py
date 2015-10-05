@@ -22,6 +22,7 @@ class Membrane():
         our default membrane properties. User will also have option to set the 
         parameters. Temperature is in Kelvin. Time is in msec."""
         self.channel_set = []
+        self.Vm = 0
         self.Temp = 298 #set default value to 298K
         self.simulation_time = 100 #set default simulation time to 100ms
         self.dt = 1 #set default dt to 1 ms
@@ -30,11 +31,28 @@ class Membrane():
     def get_membrane_parameters(self):
         """This function will set the properties of the membranne either to 
         default values or can take user input."""
+        IsMembraneVoltageVerified = False
         IsTempVerified = False
         IsSimTimeVerified = False
         IsDtVerified = False
-        UseDefaultYN = input("Would you like to use defaults for Temp, Sim Time and dt? (Y/N) :")
+        UseDefaultYN = input("Would you like to use defaults for Vm, Temp, Sim Time and dt? (Y/N) :")
         if UseDefaultYN.lower() != 'y':
+            while IsMembraneVoltageVerified is False:     
+                membraneVoltageStr = input("At what voltage would you like to clamp this channel (mV)?: ")
+                try:
+                    membraneVoltage = float(membraneVoltageStr)
+                except ValueError:
+                    print("Error: Membrane Voltage was not entered as a number") 
+                else:
+                    if membraneVoltage < -200 or membraneVoltage > 400:
+                        print("Warning: Membrane Voltage is outside -200mV to 400mV range")
+                        IsItOK = input("Is this OK (Y/N)?")
+                        if IsItOK.lower() == 'y':
+                            IsMembraneVoltageVerified = True
+                        else:
+                            IsMembraneVoltageVerified = False
+                    else:
+                        IsMembraneVoltageVerified = True         
             while IsTempVerified is False:
                 Temperature = input("Enter Temperature (0K - 400K): ")
                 try:
@@ -92,7 +110,7 @@ class Membrane():
         total_current_TS = []
 
         for channel in self.channel_set:
-            channel_current_TS_local = channel.computeCurrentTS(self.simulation_time, self.dt, self.Temp)
+            channel_current_TS_local = channel.computeCurrentTS(self.Vm, self.simulation_time, self.dt, self.Temp)
             if total_current_TS == []:
                 total_current_TS = channel_current_TS_local
             else:
