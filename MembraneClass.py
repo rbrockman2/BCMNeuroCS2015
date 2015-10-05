@@ -97,7 +97,7 @@ class Membrane():
         print("y_axis length {0}".format(len(y_axis)))
         print("x_axis length {0}".format(len(x_axis)))              
             
-        plot.plot(x_axis, y_axis, label='time', marker='o', color='maroon', linestyle = '-')
+        plot.plot(x_axis, y_axis, label='time', color='maroon', linestyle = '-')
         plot.xlabel('Time (msec)')
         plot.ylabel('Net current (nA)')
         plot.title('Current Time Series')
