@@ -89,7 +89,7 @@ class RandomSwitch():
             switch_data_one_cycle = closing + opening
         return switch_data_one_cycle
 
-    def run_switch(self, run_time=500, dt=0.1):
+    def run_switch(self, run_time=500, dt=0.01):
         """Generates a sequence of 1s and 0s corresponding to whether the
         switch is open or closed at any given time step.  Returned list
         represents switch state for an entire data run.
@@ -102,6 +102,10 @@ class RandomSwitch():
             trimmed_switch_data:  sequence of 1s and 0s corresponding to the
                 state of the switch at each time step.  1 is open, 0 is closed.
         """
+        if dt == 0:
+            print("Time step size must not be zero!")
+            dt = 0.01
+
         switch_data = []
         start_state = randint(0, 1)  # initial state is 0=closed, or 1=open
 

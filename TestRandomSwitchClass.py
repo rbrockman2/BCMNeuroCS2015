@@ -16,6 +16,12 @@ class TestRandomSwitch(unittest.TestCase):
         self.openSwitch = RandomSwitch(1, 0)
         self.closedSwitch = RandomSwitch(0, 1)
 
+    def testDumbInput(self):
+        self.idiotSwitch = RandomSwitch(0, 0)
+        self.idiotSwitch = RandomSwitch(-4, 0)
+        self.idiotSwitch = RandomSwitch(0, 4)
+        self.assertEqual(self.openSwitch.run_switch(0.01, 0), [1])
+
     def testStuckSwitch(self):
         self.assertEqual(self.openSwitch.run_switch(1, 1), [1])
         self.assertEqual(self.closedSwitch.run_switch(1, 1), [0])

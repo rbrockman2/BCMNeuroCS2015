@@ -243,8 +243,6 @@ class Channel():
         current_TS = Channel.currentFromTimeSeries_oneVm(numChannel_TS, self.gamma, Vm, self.E0)
         
         return current_TS
-        
-       # -*- coding: utf-8 -*-
 
     def compute_voltage_dependence(self, T=295, Vm=0):
         """
@@ -321,14 +319,7 @@ class Channel():
         '''
         Vm_inV = float(Vm * 10**-3)
         Ex_inV = float(Ex * 10**-3)
-        print(len(timeseries))
-        #if len(timeseries) > 1:
+
         current_series = [N * gamma * (Vm_inV - Ex_inV) for N in timeseries]
-        #else:
-        #current_series = timeseries * gamma * (Vm_inV - Ex_inV)
+
         return current_series            
-                
-            
-        
-        
-    
