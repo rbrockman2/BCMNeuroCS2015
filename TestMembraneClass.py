@@ -1,8 +1,18 @@
 # -*- coding: utf-8 -*-
 """
 Created on Mon Oct  5 00:58:24 2015
-
 @author: robert
+"""
+
+"""
+lifeo is open lifetime at 0 mV, in msec
+lifec is closed lifetime at 0 mV, in msec
+zg is gating charge, an integer
+d is delta
+Vm is voltage across the membranem in mV
+N is number of channels, an integer
+gamma is the single channel conductance, in Siemens 
+E0 is the channel's reversal potential, in mV
 """
 
 from MembraneClass import Membrane
