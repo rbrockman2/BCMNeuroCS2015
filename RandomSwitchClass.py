@@ -11,15 +11,12 @@ from random import randint
 class RandomSwitch():
     """This class is a model of a switch that turns itself on and off randomly
     with time according to Poisson statisics."""
-
     def __init__(self, open_lifetime=2, closed_lifetime=3):
         """Constructor.
 
         Inputs:
             open_lifetime:  mean time the switch stays open in ms
             closed_lifetime:  mean time the switch stays closed in ms"""
-
-        # Convert ms to s.
         self.open_lifetime = float(open_lifetime)
         self.closed_lifetime = float(closed_lifetime)
 
@@ -51,14 +48,27 @@ class RandomSwitch():
             switch_data_one_cycle = closing + opening
         return switch_data_one_cycle
 
-    def run_switch(self, run_time=500, dt=1):  # added dt as input to this function instead of having default value        
+    def run_switch(self, run_time=500, dt=0.1):
+        """Generates a sequence of 1s and 0s corresponding to whether the
+        switch is open or closed at any given time step.  Returned list
+        represents switch state for an entire data run.
+
+        Inputs:
+            run_time:  length of data run in ms
+            dt:  time step in ms
+
+        Outputs:
+            trimmed_switch_data:  sequence of 1s and 0s corresponding to the
+                state of the switch at each time step.  1 is open, 0 is closed.
+        """
         switch_data = []
         start_state = randint(0, 1)  # initial state is 0=closed, or 1=open
 
-        total_data_length = int(run_time/dt)
+        total_data_length = int(run_time/dt)  # number of samples needed
 
-        while len(switch_data) <= total_data_length:
+        while len(switch_data) < total_data_length:
             switch_data += self.run_switch_cycle(dt, start_open=start_state)
 
-        trimmed_switch_data = switch_data[0:int(run_time/dt)]
+        # Remove extra samples to ensure consistent length.
+        trimmed_switch_data = switch_data[0:total_data_length]
         return trimmed_switch_data
