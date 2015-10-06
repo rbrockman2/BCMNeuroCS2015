@@ -1,145 +1,169 @@
 # -*- coding: utf-8 -*-
 """
-Created on Wed Sep 30 21:19:21 2015
+Created on Tue Sep 29 2015
 
-@author: uday, kim
+@author: The Entire First Year Neuroscience Graduate Student Contingent
+    (plus Elizabeth Lackey from second year, of course)
+
+BCM Computation for Neuroscience Fall 2015
+
+Final Group Assignment
 """
-
 import matplotlib.pyplot as plot
 from ChannelClass import Channel
 import numpy as np
-debug = True
+debug = False
 
 
 class Membrane():
-    """
-    Created on Wed Sep 30 21:19:21 2015
+    """This class represents a membrane which can have multiple types of
+    channels embedded in it.
 
-    @author: uday, kim
+    Uday and Kim spearheaded writing this class.
     """
     def __init__(self):
-        """This function creates an instance of the membrane class with 
-        our default membrane properties. User will also have option to set the 
-        parameters. Temperature is in Kelvin. Time is in msec."""
+        """This function creates an instance of the membrane class with
+        our default membrane properties. User will also have option to set the
+        parameters. Temperature is in Kelvin. Times are in msec."""
         self.channel_set = []
-        self.Vm = -65
-        self.T = 310 #set default value to 310K
-        self.simulation_time = 100 #set default simulation time to 100ms
-        self.dt = 0.01 #set default dt to 0.01 ms
-        self.noise_amp = 1E-13
-        
+        self.Vm = -65  # mV
+        self.T = 310  # K
+        self.simulation_time = 100  # ms
+        self.dt = 0.01  # ms
+        self.noise_amp = 1E-13  # scale factor for added Gaussian noise
+
     def get_membrane_parameters(self):
-        """This function will set the properties of the membranne either to 
-        default values or can take user input."""
-        IsMembraneVoltageVerified = False
-        IsTempVerified = False
-        IsSimTimeVerified = False
-        IsDtVerified = False
-        UseDefaultYN = input("Would you like to use defaults for Vm, Temperature, Sim Time and dt? (Y/N) :")
+        """This function will set either set the properties of the membrane
+        to default values or will allow the user to set them."""
+        UseDefaultYN = input("Would you like to use defaults for Vm,\
+ temperature, simulation time and time step (dt)? (y/N): ")
         if UseDefaultYN.lower() != 'y':
-            while IsMembraneVoltageVerified is False:     
-                membraneVoltageStr = input("At what voltage would you like to clamp this channel (mV)?: ")
+            IsMembraneVoltageVerified = False
+            while IsMembraneVoltageVerified is False:
+                membraneVoltageStr = input("At what voltage would you like to\
+ clamp the membrane (mV)?: ")
                 try:
                     self.Vm = float(membraneVoltageStr)
                 except ValueError:
-                    print("Error: Membrane Voltage must be a number.") 
+                    print("Error: Membrane voltage must be a number.")
                 else:
                     if self.Vm < -200 or self.Vm > 400:
-                        print("Warning: Membrane Voltage is outside -200mV to 400mV range.")
-                        IsItOK = input("Is this OK (Y/N)?")
+                        print("Warning: Membrane voltage is outside -200mV to\
+ 400mV range.")
+                        IsItOK = input("Is this OK? (y/N): ")
                         if IsItOK.lower() == 'y':
                             IsMembraneVoltageVerified = True
                         else:
                             IsMembraneVoltageVerified = False
                     else:
-                        IsMembraneVoltageVerified = True         
+                        IsMembraneVoltageVerified = True
+
+            IsTempVerified = False
             while IsTempVerified is False:
                 Temperature = input("Enter Temperature (0K - 400K): ")
                 try:
                     self.Temp = int(Temperature)
                 except ValueError:
-                    print("Error: Temperatures are outside expected range (0K - 400K).")                
+                    print("Error: Temperatures are outside expected range\
+ (0K - 400K).")
                 else:
                     if self.Temp < 0 or self.Temp > 400:
-                        print("Error: Temperatures are outside expected range (0K - 400K).")    
+                        print("Error: Temperatures are outside expected range\
+ (0K - 400K).")
                     else:
                         IsTempVerified = True
+
+            IsSimTimeVerified = False
             while IsSimTimeVerified is False:
                 SimTime = input("Enter Total Simulation Time (msec): ")
                 try:
                     self.simulation_time = int(SimTime)
                 except ValueError:
-                    print("Error: Simulation Time was not entered as a positive integer.") 
+                    print("Error: Simulation Time was not entered as a\
+ positive integer.")
                 else:
                     if self.simulation_time <= 0:
-                        print("Error: Simulation Time was not entered as a positive integer.")
+                        print("Error: Simulation Time was not entered as a\
+ positive integer.")
                     else:
                         IsSimTimeVerified = True
+
+            IsDtVerified = False
             while IsDtVerified is False:
                 dtStep = input("Enter time step (dt) (should be <1msec): ")
                 try:
                     self.dt = float(dtStep)
                 except ValueError:
-                    print("Error: time step was not entered as a positive integer.") 
+                    print("Error: time step was not entered as a positive\
+ integer.")
                 else:
                     if self.dt <= 0:
-                        print("Error: time step was not entered as a positive integer.") 
+                        print("Error: time step was not entered as a positive\
+ integer.")
                     elif self.dt > self.simulation_time:
-                        print("Error: time step entered is longer than Simulation time.")
-                    else: 
+                        print("Error: time step entered is longer than\
+ simulation time.")
+                    else:
                         IsDtVerified = True
- 
-    def create_channel_set(self, **inDict):
-        '''Takes a dictionary of dictionaries as input. If empty, query 
-        user for more information. If has channel object as a dictionary entry,
-        appends to channel_set.'''
-        if len(inDict) == 0:
+
+    def create_channel_set(self, **input_dict):
+        '''Takes a dictionary of dictionaries as input. If the input is empty,
+        query user for more information. If the input has a channel object as a
+        dictionary entry, appends the channel object to channel_set.'''
+        if len(input_dict) == 0:
             more_channels = True
-            while more_channels == True:   
+            while more_channels is True:
                 self.channel_set.append(Channel())
-                continueQuery = input("Add more channels?  (y/N) ")
-                if continueQuery.lower() == 'y':
+                continue_query = input("Add more channels?  (y/N): ")
+                if continue_query.lower() == 'y':
                     more_channels = True
                 else:
                     more_channels = False
         else:
-            for channName, channObj in inDict.items():
-                self.channel_set.append(channObj)
+            for channel_name, channel_obj in input_dict.items():
+                self.channel_set.append(channel_obj)
 
-    def compute_current(self):  
+    def compute_current(self):
+        """This function calculates the time series of membrane current values
+        by adding together the time series of current values for each channel
+        type
+        """
         total_current_TS = []
 
         for channel in self.channel_set:
-            channel_current_TS_local = channel.compute_current_TS(self.Vm, self.simulation_time, self.dt, self.T)
+            # Calculate channel current object time series.
+            channel_current_TS_local =\
+                channel.compute_current_TS(self.Vm, self.simulation_time,
+                                           self.dt, self.T)
             if total_current_TS == []:
                 total_current_TS = channel_current_TS_local
             else:
-                #total_current_TS += channel_current_TS_local
-                temp = total_current_TS
-                del total_current_TS
-                total_current_TS = []
-                for i in range(0, len(temp)):
-                    total_current_TS.append(temp[i] + channel_current_TS_local[i])
+                # Add series from single channel type to total.
+                # Time series are converted to lists to maintain type
+                #   consistency.
+                total_current_TS = np.add(total_current_TS,
+                                          channel_current_TS_local).tolist()
         return total_current_TS
-    
+
     @staticmethod
-    def add_noise(channel_data, amp):
-        """Worked on by Gabe S. and Elizabeth L."""
-        """ATTN: there is unit testing stuff in here you will need to get rid of for actual inputs"""
-        
-        """This function adds noise to the on and off states to make it more biologically realistic.
-        
-        Inputs: 
-            channel_data output of record_channel
-            
-        Outputs: 
+    def add_noise(time_series, noise_amp):
+        """This function adds noise to a time series to make it more
+        biologically realistic.
+
+        Inputs:
+            time_series:  a list of values that need Gaussian noise to be added
+            noise_amp:  scale factor for additive Gaussian noise
+
+        Outputs:
             array of channel_data with noise added
+
+        Worked on by:  Gabe S. and Elizabeth L.
         """
-        
-        noise = np.random.normal(size=len(channel_data)) #takes the output from record_channel and makes a tuple of random numbers using Numpy
-        scaled_noise = noise * amp #takes your randoms from the last line and scales
-        chan_dat_np = np.array(channel_data)+scaled_noise #creates an array from our channel_data list input and adds our scaled noise to it
-        return chan_dat_np #returns the output of the line above as the function's output
+        # Use numpy to create Gaussian noise.
+        noise = np.random.normal(size=len(time_series))
+        scaled_noise = noise * noise_amp  # Scale noise.
+        noisy_TS = np.add(time_series, scaled_noise).tolist()  # Add noise.
+        return noisy_TS
 
     @staticmethod
     def plot_current_TS(current_TS, dt=1E5):
@@ -149,42 +173,45 @@ class Membrane():
         Inputs:
             current_TS:  a list of current values in amps
             dt: the time step size for the current time series in ms
-            
-        Authors: by Gabe and Carli.    
-        
+
+        Worked on by:  Gabe and Carli.
         """
-               
-        print("Time Step in ms {0}".format(dt));
-        print("Length of the time series {0}".format(len(current_TS)))                
-               
-             
-        x_axis = []    
+        if debug is True:
+            print("Time Step in ms:  {0}".format(dt))
+            print("Length of the time series:  {0}".format(len(current_TS)))
+
+        # Create x_axis list of time values.
+        x_axis = []
         i = 0
         idx = 0
-        while idx < len(current_TS): # create x_axis list in correct time steps
-            x_axis += [i] 
+        while idx < len(current_TS):
+            x_axis += [i]
             i += dt
             idx += 1
-            
+
+        # Convert y_axis list of current values to nanoamps for display.
         nano_current = []
-        for item in current_TS: 
-            item = item*(10**9) # convert to nanoamps for graph prettiness
+        for item in current_TS:
+            item = item*(10**9)  # Convert to nanoamps for graph prettiness.
             nano_current += [item]
         y_axis = nano_current
 
-            
-        print("y_axis length {0}".format(len(y_axis)))
-        print("x_axis length {0}".format(len(x_axis)))              
-            
-        plot.plot(x_axis, y_axis, label='time', color='maroon', linestyle = '-')
-        plot.xlabel('Time (msec)')
+        if debug is True:
+            print("y_axis length:  {0}".format(len(y_axis)))
+            print("x_axis length:  {0}".format(len(x_axis)))
+
+        plot.plot(x_axis, y_axis, label='time', color='maroon',
+                  linestyle='-')
+        plot.xlabel('Time (ms)')
         plot.ylabel('Net current (nA)')
-        plot.title('Current Time Series')
+        plot.title('Membrane Current Time Series')
         plot.grid()
         plot.show()
-       
-    def make_plot(self):        
+
+    def make_plot(self):
+        """Computes and plots the membrane current time series including
+        Gaussian noise."""
         current_TS = self.compute_current()
-        noisy_TS = Membrane.add_noise(current_TS,self.noise_amp)        
-        
-        Membrane.plot_current_TS(noisy_TS,self.dt)    
+        noisy_TS = Membrane.add_noise(current_TS, self.noise_amp)
+
+        Membrane.plot_current_TS(noisy_TS, self.dt)

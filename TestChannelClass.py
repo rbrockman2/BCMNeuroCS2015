@@ -1,4 +1,14 @@
 # -*- coding: utf-8 -*-
+"""
+Created on Tue Sep 29 2015
+
+@author: The Entire First Year Neuroscience Graduate Student Contingent
+    (plus Elizabeth Lackey from second year, of course)
+
+BCM Computation for Neuroscience Fall 2015
+
+Final Group Assignment
+"""
 from ChannelClass import Channel
 import unittest
 
@@ -48,7 +58,6 @@ class TestComputeCurrentTS(unittest.TestCase):
         #        = lifeo * 7.0727 * 10^-3 = 0.070727
         #  I = (Vm-Ex)*gamma*N*(lifeo/(lifec+lifeo))
         #  I = (-0.1)*10E-9*100*(0.070727 / (103.449 + 0.070727)) = 6.8322E-11
-        print(self.channel.compute_voltage_dependence(300, -40))
         current_TS = self.channel.compute_current_TS(Vm, 10000, 0.01, 300)
         mean_current_TS = sum(current_TS) / float(len(current_TS))
         self.assertAlmostEqual(mean_current_TS, -6.83e-7, 4)
@@ -147,14 +156,14 @@ class TestOpenChannelTS(unittest.TestCase):
         self.assertEqual(Channel.open_channel_TS(1, 0.5, 100, 0, 1), [0, 0])
 
 
-class TestCurrentFromTimeSeries_oneVm(unittest.TestCase):
+class TestComputeCurrentFromOpenTS(unittest.TestCase):
     def testIfRuns(self):
         timeseries = [0 for i in range(0, 1000)]
         gamma = 0
         Vm = 0
         Ex = 0
-        currentTimeSeries = Channel.currentFromTimeSeries_oneVm(timeseries,
-                                                                gamma, Vm, Ex)
+        currentTimeSeries = Channel.compute_current_from_open_TS(timeseries,
+                                                                 gamma, Vm, Ex)
         self.assertEqual(sum(currentTimeSeries), 0)
 
     def testDrivingForce(self):
@@ -162,16 +171,16 @@ class TestCurrentFromTimeSeries_oneVm(unittest.TestCase):
         gamma = 1
         Vm = 20
         Ex = 20
-        currentTimeSeries = Channel.currentFromTimeSeries_oneVm(timeseries,
-                                                                gamma, Vm, Ex)
+        currentTimeSeries = Channel.compute_current_from_open_TS(timeseries,
+                                                                 gamma, Vm, Ex)
         self.assertEqual(sum(currentTimeSeries), 0)
 
         timeseries = [1 for i in range(0, 1000)]
         gamma = 1
         Vm = 20
         Ex = 10
-        currentTimeSeries = Channel.currentFromTimeSeries_oneVm(timeseries,
-                                                                gamma, Vm, Ex)
+        currentTimeSeries = Channel.compute_current_from_open_TS(timeseries,
+                                                                 gamma, Vm, Ex)
         self.assertAlmostEqual(.010 * len(timeseries), sum(currentTimeSeries))
 
     def testGamma(self):
@@ -179,8 +188,8 @@ class TestCurrentFromTimeSeries_oneVm(unittest.TestCase):
         gamma = 0.5
         Vm = 20
         Ex = 19
-        currentTimeSeries = Channel.currentFromTimeSeries_oneVm(timeseries,
-                                                                gamma, Vm, Ex)
+        currentTimeSeries = Channel.compute_current_from_open_TS(timeseries,
+                                                                 gamma, Vm, Ex)
         self.assertAlmostEqual(gamma*0.001*len(timeseries),
                                sum(currentTimeSeries))
 

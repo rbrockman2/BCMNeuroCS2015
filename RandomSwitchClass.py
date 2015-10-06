@@ -1,8 +1,13 @@
 # -*- coding: utf-8 -*-
 """
-Created on Wed Sep 30 19:18:24 2015
+Created on Tue Sep 29 2015
 
-@author: Jiakun Fu
+@author: The Entire First Year Neuroscience Graduate Student Contingent
+    (plus Elizabeth Lackey from second year, of course)
+
+BCM Computation for Neuroscience Fall 2015
+
+Final Group Assignment
 """
 import numpy as np
 from random import randint
@@ -10,7 +15,10 @@ from random import randint
 
 class RandomSwitch():
     """This class is a model of a switch that turns itself on and off randomly
-    with time according to Poisson statisics."""
+    with time according to Poisson statisics.
+
+    Jiakun took the initiative on sorting out this class.
+    """
     def __init__(self, open_lifetime=2, closed_lifetime=3):
         """Constructor.
 

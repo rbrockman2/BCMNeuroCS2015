@@ -1,16 +1,19 @@
 # -*- coding: utf-8 -*-
 """
-Created on Wed Sep 30 20:40:30 2015
+Created on Tue Sep 29 2015
 
-@author: Olivia
+@author: The Entire First Year Neuroscience Graduate Student Contingent
+    (plus Elizabeth Lackey from second year, of course)
+
+BCM Computation for Neuroscience Fall 2015
+
+Final Group Assignment
 """
-
-
 from RandomSwitchClass import RandomSwitch
 import numpy as np
 from math import exp
 
-debug = True
+debug = False
 
 
 class Channel():
@@ -18,7 +21,10 @@ class Channel():
     type in a cell membrane.  There can be many individual channels for
     each channel type object, each of which will flip open and closed randomly
     according to specified kinetic properties which can be affected by
-    membrane voltage."""
+    membrane voltage.
+
+    Olivia spearheaded work on this class.
+    """
     def __init__(self, **propDict):
         '''Creates an instance of the channel class with properties:
             lifeo   lifetime open in ms at 0 mV
@@ -271,9 +277,9 @@ class Channel():
             print("Average # of open channels: {0}".format(mean_open_channels))
 
         # Compute current from all channels of this type for each time step.
-        current_TS = Channel.currentFromTimeSeries_oneVm(num_open_channel_TS,
-                                                         self.gamma, Vm,
-                                                         self.E0)
+        current_TS = Channel.compute_current_from_open_TS(num_open_channel_TS,
+                                                          self.gamma, Vm,
+                                                          self.E0)
 
         return current_TS
 
@@ -331,7 +337,7 @@ class Channel():
         return summed_series
 
     @staticmethod
-    def currentFromTimeSeries_oneVm(timeseries, gamma, Vm, Ex):
+    def compute_current_from_open_TS(timeseries, gamma, Vm, Ex):
         '''
         Given the number of channels active at a series of times, this function
         will return a vector of the current passed by these channels during

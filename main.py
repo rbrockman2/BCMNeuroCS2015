@@ -8,9 +8,7 @@ Created on Tue Sep 29 2015
 BCM Computation for Neuroscience Fall 2015
 
 Final Group Assignment
-
 """
-
 from MembraneClass import Membrane
 
 if __name__ == "__main__":
