@@ -10,6 +10,7 @@ from RandomSwitchClass import RandomSwitch
 import numpy as np
 from math import exp
 
+debug=True
 
 class Channel():
     """This class models the properties of all of the channels of a specific
@@ -220,43 +221,60 @@ class Channel():
             if count < 8:
                 print('WARNING: Some channel properties left at default values.')
         return name, openlife, closedlife, gatingCharges, delta, number, Erev, gamma
-        
-    def computeCurrentTS(self, Vm, time, dt, temp):
+
+    def compute_current_TS(self, Vm, record_time, dt, T):
         '''This function is set up to be called from outside (i.e., from a Membrane
-        object that contains this channel object). It takes time (total duration
-        of the recording), dt (the size of the time step), and temp (temperature in K).
-            It utilizes compute_voltage_dependence to get the channel's open
-        and closed lifetimes at the object's Vm, channelSummer to get the number
-        of channels open in each bin (which should be of width dt), and
-        currentFromTimeSeries_oneVm to find the current being passed by
-        these channels in each bin (still of width dt).
-            This function will return a vector with the current being passed
-        by the channels in each bin of dt, with the first bin corresponding to
-        time 0 to dt, the second bin corresponding to time dt to 2*dt, etc.'''
-        # call Uday/Kim to get lifetime open and closed
-        lifeo_Vm, lifec_Vm = self.compute_voltage_dependence(temp, Vm)
-        
-        # call Andrew to get the time series
-        numChannel_TS = Channel.open_channel_TS(time, dt, self.N, lifeo_Vm, lifec_Vm)        
-        
-        # call Olivia to get the current
-        current_TS = Channel.currentFromTimeSeries_oneVm(numChannel_TS, self.gamma, Vm, self.E0)
-        
+        object that contains this channel object). If computes the current
+        passed by all of the channels of this type for each time step.
+
+        Inputs:
+            Vm:  the membrane voltage the channel is clamped at in mV
+            record_time:  the duration of the recording in ms
+            dt:  the duration of the time step in ms
+            T:  temperature in K
+
+        Outputs:
+            current_TS:  a vector with the current being passed by the channels
+                in each bin of dt, with the first bin corresponding to
+                time 0 to dt, the second bin corresponding to time dt to 2*dt,
+                etc.'''
+
+        # Adjust open and closed lifetimes for voltage dependence.
+        lifeo_Vm, lifec_Vm = self.compute_voltage_dependence(T, Vm)
+
+        # Calculate the number of channels that are open at each time step.
+        num_open_channel_TS = Channel.open_channel_TS(record_time, dt, self.N,
+                                                      lifeo_Vm, lifec_Vm)
+
+        mean_open_channels = sum(num_open_channel_TS) / \
+            float(len(num_open_channel_TS))
+
+        if debug is True:
+            print("Lifetimes: {0} {1}".format(lifeo_Vm, lifec_Vm))
+            print("Average # of open channels: {0}".format(mean_open_channels))
+
+        # Compute current from all channels of this type for each time step.
+        current_TS = Channel.currentFromTimeSeries_oneVm(num_open_channel_TS,
+                                                         self.gamma, Vm,
+                                                         self.E0)
+
         return current_TS
 
     def compute_voltage_dependence(self, T=295, Vm=0):
-        """
-        Created on Wed Sep 30 19:33:53 2015
-        
-        @author: Kimberly, Uday
-        
-        Function: compute voltage dependent lifetime and test
-        Outputs:  lambda open Vm, lambda closed Vm
-        Function is passed lambda-open at 0 mV, lambda-closed at 0 mV, the zg gating
-        charges, temperature in K, delta, and voltage clamp Vm.
-        """
-        F = 1E5
-        R = 8.3
+        """This function computes the voltage dependent open and closed
+        lifetimes for this channel type.
+
+        Inputs:
+            T:  temperature in K
+            Vm:  the membrane voltage the channel is clamped at in mV
+
+        Outputs:
+            lifeo_Vm:  voltage-adjusted lifetime of open state for this channel
+            lifec_Vm:  voltage-adjusted lifetime of closed state for this
+                channel."""
+
+        F = 96485  # Faraday's constant in coloumbs per mole
+        R = 8.314  # Ideal gas constant in J / (mole * K)
 
         lifeo_Vm = self.lifeo * exp((self.d*self.zg*F*(Vm/1000))/(R*T))
         lifec_Vm = self.lifec * exp(((1-self.d)*-1*self.zg*F*(Vm/1000))/(R*T))

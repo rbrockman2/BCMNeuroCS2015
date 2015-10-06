@@ -110,7 +110,7 @@ class Membrane():
         total_current_TS = []
 
         for channel in self.channel_set:
-            channel_current_TS_local = channel.computeCurrentTS(self.Vm, self.simulation_time, self.dt, self.Temp)
+            channel_current_TS_local = channel.compute_current_TS(self.Vm, self.simulation_time, self.dt, self.Temp)
             if total_current_TS == []:
                 total_current_TS = channel_current_TS_local
             else:
@@ -137,7 +137,7 @@ class Membrane():
         """
         
         noise = np.random.normal(size=len(channel_data)) #takes the output from record_channel and makes a tuple of random numbers using Numpy
-        scaled_noise = noise * amp #takes your randoms from the last line and scales them down to 5% of what they were
+        scaled_noise = noise * amp #takes your randoms from the last line and scales
         chan_dat_np = np.array(channel_data)+scaled_noise #creates an array from our channel_data list input and adds our scaled noise to it
         return chan_dat_np #returns the output of the line above as the function's output
 
