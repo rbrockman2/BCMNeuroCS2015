@@ -132,26 +132,29 @@ class TestOpenChannelTS(unittest.TestCase):
         self.assertEqual(Channel.open_channel_TS(1, 0.5, 1, 0, 1), [0, 0])
 
     def test_two_channel(self):
-        self.assertEqual(Channel.open_channel_TS(1,1,2,1,0),[2])
-        self.assertEqual(Channel.open_channel_TS(1,1,2,0,1),[0])
-        self.assertEqual(Channel.open_channel_TS(1,0.5,2,1,0),[2,2])
-        self.assertEqual(Channel.open_channel_TS(0,0.5,2,1,0),[])
-        self.assertEqual(Channel.open_channel_TS(1,0.5,2,0,1),[0,0])
-        
+        self.assertEqual(Channel.open_channel_TS(1, 1, 2, 1, 0), [2])
+        self.assertEqual(Channel.open_channel_TS(1, 1, 2, 0, 1), [0])
+        self.assertEqual(Channel.open_channel_TS(1, 0.5, 2, 1, 0), [2, 2])
+        self.assertEqual(Channel.open_channel_TS(0, 0.5, 2, 1, 0), [])
+        self.assertEqual(Channel.open_channel_TS(1, 0.5, 2, 0, 1), [0, 0])
+
     def test_100_channel(self):
-        self.assertEqual(Channel.open_channel_TS(1,1,100,1,0),[100])
-        self.assertEqual(Channel.open_channel_TS(1,1,100,0,1),[0])
-        self.assertEqual(Channel.open_channel_TS(1,0.5,100,1,0),[100,100])
-        self.assertEqual(Channel.open_channel_TS(0,0.5,100,1,0),[])
-        self.assertEqual(Channel.open_channel_TS(1,0.5,100,0,1),[0,0])
-        
+        self.assertEqual(Channel.open_channel_TS(1, 1, 100, 1, 0), [100])
+        self.assertEqual(Channel.open_channel_TS(1, 1, 100, 0, 1), [0])
+        self.assertEqual(Channel.open_channel_TS(1, 0.5, 100, 1, 0),
+                         [100, 100])
+        self.assertEqual(Channel.open_channel_TS(0, 0.5, 100, 1, 0), [])
+        self.assertEqual(Channel.open_channel_TS(1, 0.5, 100, 0, 1), [0, 0])
+
+
 class TestCurrentFromTimeSeries_oneVm(unittest.TestCase):
     def testIfRuns(self):
         timeseries = [0 for i in range(0, 1000)]
         gamma = 0
         Vm = 0
         Ex = 0
-        currentTimeSeries = Channel.currentFromTimeSeries_oneVm(timeseries, gamma, Vm, Ex)
+        currentTimeSeries = Channel.currentFromTimeSeries_oneVm(timeseries,
+                                                                gamma, Vm, Ex)
         self.assertEqual(sum(currentTimeSeries), 0)
 
     def testDrivingForce(self):
@@ -159,23 +162,27 @@ class TestCurrentFromTimeSeries_oneVm(unittest.TestCase):
         gamma = 1
         Vm = 20
         Ex = 20
-        currentTimeSeries = Channel.currentFromTimeSeries_oneVm(timeseries, gamma, Vm, Ex)
+        currentTimeSeries = Channel.currentFromTimeSeries_oneVm(timeseries,
+                                                                gamma, Vm, Ex)
         self.assertEqual(sum(currentTimeSeries), 0)
-        
+
         timeseries = [1 for i in range(0, 1000)]
         gamma = 1
         Vm = 20
         Ex = 10
-        currentTimeSeries = Channel.currentFromTimeSeries_oneVm(timeseries, gamma, Vm, Ex)
+        currentTimeSeries = Channel.currentFromTimeSeries_oneVm(timeseries,
+                                                                gamma, Vm, Ex)
         self.assertAlmostEqual(.010 * len(timeseries), sum(currentTimeSeries))
-    
+
     def testGamma(self):
         timeseries = [1 for i in range(0, 1000)]
         gamma = 0.5
         Vm = 20
         Ex = 19
-        currentTimeSeries = Channel.currentFromTimeSeries_oneVm(timeseries, gamma, Vm, Ex)
-        self.assertAlmostEqual(gamma*0.001*len(timeseries), sum(currentTimeSeries))
+        currentTimeSeries = Channel.currentFromTimeSeries_oneVm(timeseries,
+                                                                gamma, Vm, Ex)
+        self.assertAlmostEqual(gamma*0.001*len(timeseries),
+                               sum(currentTimeSeries))
 
 """Unit Testing."""
 if __name__ == '__main__':

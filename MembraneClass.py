@@ -23,7 +23,7 @@ class Membrane():
         parameters. Temperature is in Kelvin. Time is in msec."""
         self.channel_set = []
         self.Vm = -65
-        self.Temp = 310 #set default value to 310K
+        self.T = 310 #set default value to 310K
         self.simulation_time = 100 #set default simulation time to 100ms
         self.dt = 0.01 #set default dt to 0.01 ms
         self.noise_amp = 1E-13
@@ -35,17 +35,17 @@ class Membrane():
         IsTempVerified = False
         IsSimTimeVerified = False
         IsDtVerified = False
-        UseDefaultYN = input("Would you like to use defaults for Vm, Temp, Sim Time and dt? (Y/N) :")
+        UseDefaultYN = input("Would you like to use defaults for Vm, Temperature, Sim Time and dt? (Y/N) :")
         if UseDefaultYN.lower() != 'y':
             while IsMembraneVoltageVerified is False:     
                 membraneVoltageStr = input("At what voltage would you like to clamp this channel (mV)?: ")
                 try:
-                    membraneVoltage = float(membraneVoltageStr)
+                    self.Vm = float(membraneVoltageStr)
                 except ValueError:
-                    print("Error: Membrane Voltage was not entered as a number") 
+                    print("Error: Membrane Voltage must be a number.") 
                 else:
-                    if membraneVoltage < -200 or membraneVoltage > 400:
-                        print("Warning: Membrane Voltage is outside -200mV to 400mV range")
+                    if self.Vm < -200 or self.Vm > 400:
+                        print("Warning: Membrane Voltage is outside -200mV to 400mV range.")
                         IsItOK = input("Is this OK (Y/N)?")
                         if IsItOK.lower() == 'y':
                             IsMembraneVoltageVerified = True
@@ -58,10 +58,10 @@ class Membrane():
                 try:
                     self.Temp = int(Temperature)
                 except ValueError:
-                    print("Error: Temperatures are outside expected range (0K - 400K)")                
+                    print("Error: Temperatures are outside expected range (0K - 400K).")                
                 else:
                     if self.Temp < 0 or self.Temp > 400:
-                        print("Error: Temperatures are outside expected range (0K - 400K)")    
+                        print("Error: Temperatures are outside expected range (0K - 400K).")    
                     else:
                         IsTempVerified = True
             while IsSimTimeVerified is False:
@@ -69,23 +69,23 @@ class Membrane():
                 try:
                     self.simulation_time = int(SimTime)
                 except ValueError:
-                    print("Error: Simulation Time was not entered as a positive integer") 
+                    print("Error: Simulation Time was not entered as a positive integer.") 
                 else:
                     if self.simulation_time <= 0:
-                        print("Error: Simulation Time was not entered as a positive integer")
+                        print("Error: Simulation Time was not entered as a positive integer.")
                     else:
                         IsSimTimeVerified = True
             while IsDtVerified is False:
-                dtStep = input("Enter dt step (<1msec): ")
+                dtStep = input("Enter time step (dt) (should be <1msec): ")
                 try:
                     self.dt = float(dtStep)
                 except ValueError:
-                    print("Error: dt step was not entered as a positive integer") 
+                    print("Error: time step was not entered as a positive integer.") 
                 else:
                     if self.dt <= 0:
-                        print("Error: dt step was not entered as a positive integer") 
+                        print("Error: time step was not entered as a positive integer.") 
                     elif self.dt > self.simulation_time:
-                        print("Error: dt step entered is longer than Simulation time")
+                        print("Error: time step entered is longer than Simulation time.")
                     else: 
                         IsDtVerified = True
  
@@ -110,7 +110,7 @@ class Membrane():
         total_current_TS = []
 
         for channel in self.channel_set:
-            channel_current_TS_local = channel.compute_current_TS(self.Vm, self.simulation_time, self.dt, self.Temp)
+            channel_current_TS_local = channel.compute_current_TS(self.Vm, self.simulation_time, self.dt, self.T)
             if total_current_TS == []:
                 total_current_TS = channel_current_TS_local
             else:
